@@ -125,8 +125,11 @@ services:
         environment:
             TZ: "America/New_York"
         volumes:
-            - ./data:/app/data
+            - iptv-data:/app/data
         restart: unless-stopped
+
+volumes:
+    iptv-data:
 ```
 
 ```bash
@@ -140,7 +143,7 @@ docker run -d \
   --name iptv \
   -p 8080:8080 \
   -e TZ=America/New_York \
-  -v ./data:/app/data \
+  -v iptv-data:/app/data \
   --restart unless-stopped \
   rebeliptv/iptv:latest
 ```
@@ -277,15 +280,12 @@ Events are removed from the lineup 30 minutes after the postgame block ends.
 
 ## Persistent Data
 
-All persistent data is stored in the `/app/data` volume:
+Everything that needs to survive a restart lives in the `/app/data` volume, encrypted at rest:
 
-| File                   | Purpose                                                         |
-|------------------------|-----------------------------------------------------------------|
-| `cache.json`           | Channels, events, and EPG data (encrypted)                      |
-| `custom-sources.json`  | User-added custom M3U source definitions                        |
-| `finished-events.json` | Recently finished sports events (keeps finals visible for ~24h) |
-| `instance.json`        | Instance ID and API key                                         |
-| `metrics.json`         | Runtime metrics (request counts, stream sessions)               |
+- **`iptv.db.gcm`** — encrypted snapshot of all data: channels, sports events, EPG guide, custom-source definitions, your API key, and runtime metrics
+- **`custom-m3u/`** — your uploaded custom M3U source files
+
+The snapshot is AES-256-GCM encrypted, so the on-disk file is opaque — running `sqlite3 iptv.db.gcm` just reports "file is not a database". While the server is running it works against a plaintext copy held in memory that never touches persistent storage; on a clean shutdown that copy is re-encrypted back into the snapshot.
 
 Channel numbers and the curated channel directory are baked into the image — not in persistent data — so cache purges never reshuffle numbers.
 
