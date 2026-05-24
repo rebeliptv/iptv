@@ -229,6 +229,7 @@ Click any sport event to see:
 | `SPORTS_MODE`   | `false`      | Sports-only mode — disables TV channels, serves only live events                                             |
 | `LEAGUES`       | `""`         | Comma-separated league codes (e.g. `NHL,NBA,MLB`) — empty means all                                          |
 | `TZ`            | `Etc/UTC`    | Timezone                                                                                                     |
+| `USE_PROXY`     | `false`      | Set to `true` if providers are blocked in your region — routes all source connections through Rebel IPTV's proxy so they resolve and connect from an unrestricted region (see [Blocked Sources](#blocked-sources)) |
 
 ### Cron Schedule Examples
 
@@ -238,6 +239,23 @@ Click any sport event to see:
 | `*/30 * * * *` | Every 30 minutes                       |
 | `0 */3 * * *`  | Every 3 hours                          |
 | `0 0 * * *`    | Once daily at midnight                 |
+
+### Blocked Sources
+
+If some providers are blocked or geo-restricted in your region (or your
+network's DNS is poisoned for them), set `USE_PROXY=true`:
+
+```yaml
+        environment:
+            USE_PROXY: "true"
+```
+
+The app then routes **all source/provider connections** through Rebel
+IPTV's proxy, which resolves and connects from a region where those
+sources aren't restricted — so your instance can still reach them. It's
+off by default; leave it unset unless you're seeing sources fail to load
+because of a regional block. Only source traffic is proxied — the web
+dashboard, your playlist, and your guide are served directly as usual.
 
 ## How It Works
 
