@@ -88,6 +88,7 @@ Designed for **Jellyfin**, **Plex**, **Emby**, and other IPTV apps.
 - **Targeted refresh controls** -- refresh just channels, just events, just the guide, or everything
 - **Automatic failover** -- if a live stream hiccups mid-watch, the proxy switches to the next provider without ending the session
 - **Cache survives restarts** -- the playlist, guide, and in-flight stream tokens are restored on boot, so clients keep playing through a container restart
+- **One-click in-app updates** -- upgrade to the latest version straight from the dashboard with an **Update now** button, no command line needed (see [Updating](#updating))
 - Continuous MPEG-TS stream proxy (works like a real TV tuner for Jellyfin/ffmpeg)
 - Sport events sorted by start time with team logos and pregame/postgame EPG entries
 - API key protection for playlist and EPG endpoints
@@ -131,6 +132,8 @@ services:
         #     TZ: "America/New_York"   # set to YOUR timezone, e.g. Europe/London, America/Chicago, Etc/UTC
         volumes:
             - iptv-data:/app/data
+            - /var/run/docker.sock:/var/run/docker.sock   # enables one-click in-app updates
+        stop_grace_period: 30s
         restart: unless-stopped
 
 volumes:
@@ -141,6 +144,8 @@ volumes:
 docker compose up -d
 ```
 
+> **Heads-up:** the `/var/run/docker.sock` mount lets the container update itself from the dashboard. It also gives the container control of the Docker daemon on the host — if you'd rather not allow that, remove the line and update with the standard `docker pull` method below instead.
+
 ### Docker Run
 
 ```bash
@@ -148,12 +153,30 @@ docker run -d \
   --name iptv \
   -p 8080:8080 \
   -v iptv-data:/app/data \
+  -v /var/run/docker.sock:/var/run/docker.sock \
   --restart unless-stopped \
   rebeliptv/iptv:latest
 
 # Environment variables are optional (defaults work). Add -e flags as needed, e.g.:
 #   -e TZ=America/New_York   (set to YOUR timezone — e.g. Europe/London, Etc/UTC)
 ```
+
+## Updating
+
+### In-app update
+
+When a newer version is available, an **Update now** button appears on the **Dashboard** and in **Settings → Server** — click it and the server downloads the new version and restarts itself, with your data kept and no command line needed. This works out of the box with the Compose and `docker run` setups above, which mount the Docker socket so the container can update itself.
+
+The button shows only on the `:latest` image when a newer release exists; it's hidden on version-pinned images (e.g. `:1.3.0`), which keep updating with the standard `docker pull` method below.
+
+### Standard update
+
+```bash
+docker pull rebeliptv/iptv:latest
+docker compose up -d
+```
+
+Your data lives in the `iptv-data` volume, so this just swaps in the new image — nothing is lost.
 
 ## Setting Up an API Key
 
@@ -206,10 +229,10 @@ On first launch a short setup wizard walks you through choosing a channel source
 ### Pages
 
 - **Dashboard** -- channel/event counts, online/offline stats, live sports with start times and scores, playlist copy buttons
-- **Channels** -- searchable and filterable channel list with category badges and online/offline status. Click a channel for its detail page with video player and program guide.
+- **Channels** -- searchable and filterable channel list (filter by category, country, and status) with category badges and online/offline status; search matches the channel name, network, and city. Click a channel for its detail page with video player and program guide.
 - **Guide** -- horizontal timeline program grid with sticky channel column, current-time indicator, and scrollable schedule
 - **Sports** -- live and upcoming events grouped by date with team logos, live scores, and "Stream Not Available Yet" indicators for upcoming games. Click an event for its detail page with live scoreboard and video player.
-- **Settings** -- API key management, dashboard login & admin-account management, theme switcher, custom M3U source management, channel lineup management (enable/disable and drag-to-reorder), Docker container-hostname toggle for endpoint URLs, source-mode toggle (local scraping vs Rebel IPTV hosted feeds), server info, version update check, targeted manual refresh (channels / guide / events / all)
+- **Settings** -- API key management, dashboard login & admin-account management, theme switcher, custom M3U source management, channel lineup management (enable/disable and drag-to-reorder), Docker container-hostname toggle for endpoint URLs, source-mode toggle (local scraping vs Rebel IPTV hosted feeds), server info, version update check with one-click in-app upgrade, targeted manual refresh (channels / guide / events / all)
 
 ### Channel Detail
 
@@ -296,7 +319,7 @@ Channel numbers are **stable** — every channel has a fixed number baked into t
 
 From **Settings → Channel Lineup** you can disable channels you don't watch (they drop out of your playlist, guide, and counts) and drag the rest into your own order. These are per-instance preferences saved with your data and layered on top of the built-in numbers, so they persist across restarts and upgrades.
 
-Local broadcast stations are identified by their FCC call sign. For example, "ABC (KABC) Los Angeles" becomes **KABC (Los Angeles, CA)** with affiliate **ABC**, and is rendered as a dynamic SVG showing the ABC network logo with the call sign and city overlay.
+Local broadcast stations are identified by their FCC call sign. For example, "ABC (KABC) Los Angeles" becomes **KABC Los Angeles CA (ABC)** — call sign, market, and network — and gets a logo showing the network mark with the call sign and city. Because the city and network are in the name, you can find a local station by searching for its city (e.g. **Los Angeles**) or network (e.g. **ABC**) in your player.
 
 Channels are grouped by category in the M3U playlist using `group-title`. Multiple categories are supported (e.g., a local station gets both "Local" and "News").
 
@@ -368,3 +391,5 @@ Found a bug or want a feature? [Open an issue](https://github.com/rebeliptv/iptv
 ## License
 
 Proprietary -- free for personal, non-commercial use. See [LICENSE](LICENSE) for details.
+
+**Forking this repository is a violation of the license.** This software may only be used in its published binary/container form. Forking, copying, or otherwise reproducing this repository creates an unauthorized derivative work, and all forks are subject to takedown.
