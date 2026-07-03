@@ -8,10 +8,13 @@
 [![Docker Image Size](https://img.shields.io/docker/image-size/rebeliptv/iptv/latest?style=for-the-badge&color=1D63ED)](https://hub.docker.com/r/rebeliptv/iptv)
 [![GitHub Release](https://img.shields.io/github/v/release/rebeliptv/iptv?style=for-the-badge&color=22C55E)](https://github.com/rebeliptv/iptv/releases/latest)
 [![License](https://img.shields.io/badge/license-proprietary-8B5CF6?style=for-the-badge)](LICENSE)
+[![Website](https://img.shields.io/badge/website-rebeliptv.net-FF6B35?style=for-the-badge)](https://www.rebeliptv.net)
 
 Aggregates live TV channels and sports events into a single M3U playlist with full EPG guide data.<br>
 Streams are fully proxied so upstream sources are never exposed to clients.<br>
 Designed for **Jellyfin**, **Plex**, **Emby**, and other IPTV apps.
+
+**🌐 New here? Follow the step-by-step [setup guide at rebeliptv.net](https://www.rebeliptv.net).**
 
 </div>
 
@@ -87,6 +90,7 @@ Designed for **Jellyfin**, **Plex**, **Emby**, and other IPTV apps.
 - **Docker-network friendly URLs** -- one-click toggle in Settings switches copied playlist / EPG URLs between the dashboard's origin and the container's internal hostname, so Jellyfin / Plex containers on the same Docker network work without hand-editing
 - **Targeted refresh controls** -- refresh just channels, just events, just the guide, or everything
 - **Automatic failover** -- if a live stream hiccups mid-watch, the proxy switches to the next provider without ending the session
+- **Adjustable stream buffering** -- optionally hold a few seconds of each live feed in memory before it reaches your player, so a brief provider hiccup drains the buffer instead of freezing the picture; off by default (as close to live as possible) and tunable in **Settings → Playback**
 - **Cache survives restarts** -- the playlist, guide, and in-flight stream tokens are restored on boot, so clients keep playing through a container restart
 - **One-click in-app updates** -- upgrade to the latest version straight from the dashboard with an **Update now** button, no command line needed (see [Updating](#updating))
 - Continuous MPEG-TS stream proxy (works like a real TV tuner for Jellyfin/ffmpeg)
@@ -113,6 +117,8 @@ The following leagues currently have working live event feeds:
 ESPN is the source of truth for all schedules, team names, and scores — scrapers only contribute stream URLs that are cross-referenced against ESPN's canonical game data. Other leagues will be added as upstream feeds become available. To request a new league, [open a feature request](https://github.com/rebeliptv/iptv/issues/new/choose).
 
 ## Quick Start
+
+> **Prefer a guided walkthrough?** The [setup guide at rebeliptv.net](https://www.rebeliptv.net) builds a Docker configuration tailored to your system (ports, timezone, in-app updates) and walks you through connecting Jellyfin / Plex. The manual setup below is the reference.
 
 ### Docker Compose (recommended)
 
@@ -232,7 +238,7 @@ On first launch a short setup wizard walks you through choosing a channel source
 - **Channels** -- searchable and filterable channel list (filter by category, country, and status) with category badges and online/offline status; search matches the channel name, network, and city. Click a channel for its detail page with video player and program guide.
 - **Guide** -- horizontal timeline program grid with sticky channel column, current-time indicator, and scrollable schedule
 - **Sports** -- live and upcoming events grouped by date with team logos, live scores, and "Stream Not Available Yet" indicators for upcoming games. Click an event for its detail page with live scoreboard and video player.
-- **Settings** -- API key management, dashboard login & admin-account management, theme switcher, custom M3U source management, channel lineup management (enable/disable and drag-to-reorder), Docker container-hostname toggle for endpoint URLs, source-mode toggle (local scraping vs Rebel IPTV hosted feeds), server info, version update check with one-click in-app upgrade, targeted manual refresh (channels / guide / events / all)
+- **Settings** -- grouped into **Server**, **Sources**, **Connect**, **Playback**, and **Access** sections: API key management, dashboard login & admin-account management, theme switcher, custom M3U source management, channel lineup management (enable/disable and drag-to-reorder), source-mode toggle (local scraping vs Rebel IPTV hosted feeds), Docker container-hostname toggle for endpoint URLs, optional channel numbers in the playlist, adjustable stream buffering, server info, version update check with one-click in-app upgrade, and targeted manual refresh (channels / guide / events / all)
 
 ### Channel Detail
 
@@ -343,6 +349,12 @@ Each event gets EPG entries with pregame, game, and postgame blocks:
 | MLB   | 30 min  | 3.5 hrs   | 30 min   |
 
 Events are removed from the lineup 30 minutes after the postgame block ends.
+
+### Stream Buffering
+
+By default the server streams each live feed as close to real-time as possible. If your feeds occasionally freeze for a second or two when a provider hiccups, turn on **Settings → Playback → Stream buffering** and choose how many seconds to hold. The server then buffers that much of the feed in memory before delivering it to your player, so a brief upstream stall drains that cushion instead of interrupting playback.
+
+The trade-off is start-up time: a buffered channel begins roughly that many seconds after you tune in — that wait *is* the buffer filling — and it then plays that many seconds behind live. Buffering applies in both local and hosted-feed modes and to any player (Jellyfin, Plex, Emby, or the built-in web player); some players add a little of their own start-up time on top. Leave it off to stay at the live edge.
 
 ## Persistent Data
 
