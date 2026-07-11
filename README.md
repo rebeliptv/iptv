@@ -73,7 +73,7 @@ Designed for **Jellyfin**, **Plex**, **Emby**, and other IPTV apps.
 
 ## Features
 
-- **380+ TV channels** with logos and persistent channel numbers that never reshuffle
+- **430+ TV channels** across the US, Canada, and the UK, with logos and persistent channel numbers that never reshuffle
 - **Live sports events** -- see [Supported Live Sports](#supported-live-sports) below
 - **Custom M3U sources** -- add your own M3U URLs or upload files to merge into the playlist; edit the URL or replace the uploaded file later without losing channel numbers
 - **Customize your lineup** -- enable/disable channels and drag to reorder them from the dashboard; disabled channels drop out of your playlist and guide, and both choices persist across restarts and upgrades
@@ -89,7 +89,7 @@ Designed for **Jellyfin**, **Plex**, **Emby**, and other IPTV apps.
 - **Built-in video player** -- program progress bar, now-playing, up-next preview, and event scoreboards
 - **Docker-network friendly URLs** -- one-click toggle in Settings switches copied playlist / EPG URLs between the dashboard's origin and the container's internal hostname, so Jellyfin / Plex containers on the same Docker network work without hand-editing
 - **Targeted refresh controls** -- refresh just channels, just events, just the guide, or everything
-- **Automatic failover** -- if a live stream hiccups mid-watch, the proxy switches to the next provider without ending the session
+- **Automatic failover** -- a brief provider hiccup is smoothed from the on-server buffer, and a source that goes bad is swapped for a working one on the next reconnect, so the stream recovers instead of freezing on a dead feed
 - **Adjustable stream buffering** -- optionally hold a few seconds of each live feed in memory before it reaches your player, so a brief provider hiccup drains the buffer instead of freezing the picture; off by default (as close to live as possible) and tunable in **Settings → Playback**
 - **Cache survives restarts** -- the playlist, guide, and in-flight stream tokens are restored on boot, so clients keep playing through a container restart
 - **One-click in-app updates** -- upgrade to the latest version straight from the dashboard with an **Update now** button, no command line needed (see [Updating](#updating))
@@ -106,13 +106,14 @@ Designed for **Jellyfin**, **Plex**, **Emby**, and other IPTV apps.
 
 The following leagues currently have working live event feeds:
 
-| League  | Sport             |
-|---------|-------------------|
-| **NHL** | Ice Hockey        |
-| **NFL** | American Football |
-| **NBA** | Basketball        |
-| **MLB** | Baseball          |
-| **MLS** | Soccer            |
+| League   | Sport                       |
+|----------|-----------------------------|
+| **NHL**  | Ice Hockey                  |
+| **NFL**  | American Football           |
+| **NBA**  | Basketball                  |
+| **MLB**  | Baseball                    |
+| **MLS**  | Soccer (US)                 |
+| **FIFA** | Soccer (World Cup / int'l)  |
 
 ESPN is the source of truth for all schedules, team names, and scores — scrapers only contribute stream URLs that are cross-referenced against ESPN's canonical game data. Other leagues will be added as upstream feeds become available. To request a new league, [open a feature request](https://github.com/rebeliptv/iptv/issues/new/choose).
 
@@ -206,15 +207,19 @@ Without a key, playlist and EPG are accessible to anyone on your network.
 5. Save and refresh guide data
 
 **Recommended tuner settings:**
+- Allow fMP4 transcoding container: **disabled**
 - Allow stream sharing: **enabled**
-- Auto-loop live streams: **enabled** — important: this lets playback automatically reconnect after a server restart or update. Without it, the channel simply stops when the container restarts and the viewer has to re-tune manually.
+- Auto-loop live streams: **disabled** — leave this **off**. With it on, Jellyfin transcodes every channel instead of playing it directly, and the transcode falls behind and freezes the picture. Streams are now standard-tuner compatible and no longer drop mid-watch, so auto-loop isn't needed. The only trade-off with it off: after a server restart or in-app update, re-select the channel to resume.
+- Ignore DTS (decoding timestamp): **enabled** — makes the tuner tolerant of minor timing hiccups in a live feed instead of erroring on them. Not required (streams are already clean), but a harmless safety margin against a flaky source.
 - Read input at native frame rate: **enabled**
 
 ### Plex
 
-1. Install the **IPTV** plugin or use **xTeVe** as middleware
+Plex's built-in **Live TV & DVR** takes an M3U tuner and XMLTV guide much like Jellyfin, but note it **requires an active Plex Pass** — without one, Plex won't let you add an M3U tuner.
+
+1. **Settings → Live TV & DVR → Set up Plex Tuner**, then choose the **"Have an M3U-based tuner"** option
 2. M3U URL: `http://<server-ip>:8080/playlist?key=YOUR_KEY`
-3. EPG URL: `http://<server-ip>:8080/epg?key=YOUR_KEY`
+3. XMLTV Guide URL: `http://<server-ip>:8080/epg?key=YOUR_KEY`
 
 ### General IPTV Clients
 
@@ -265,7 +270,7 @@ Click any sport event to see:
 | `CRON_SCHEDULE` | `30 * * * *` | Data refresh schedule (cron)                                                                                 |
 | `SPORTS_EVENTS` | `true`       | Set to `false` to disable sports events                                                                      |
 | `SPORTS_MODE`   | `false`      | Sports-only mode — disables TV channels, serves only live events                                             |
-| `LEAGUES`       | `""`         | Comma-separated league codes (e.g. `NHL,NBA,MLB`) — empty means all                                          |
+| `LEAGUES`       | `""`         | Comma-separated league codes (e.g. `NHL,NBA,MLB`) — empty means the defaults (NFL, NBA, NHL, MLB, MLS, FIFA) |
 | `TZ`            | `Etc/UTC`    | Timezone                                                                                                     |
 
 > **Source mode (local scraping vs hosted feeds)** is a dashboard setting, not an environment variable — see [Hosted Feeds](#hosted-feeds).
@@ -342,11 +347,12 @@ Sport events are scraped, then cross-referenced with ESPN's scoreboard API for a
 Each event gets EPG entries with pregame, game, and postgame blocks:
 
 | Sport | Pregame | Game      | Postgame |
-|-------|---------|-----------|----------|
-| NFL   | 30 min  | 3.5-4 hrs | 30 min   |
-| NHL   | 30 min  | 3 hrs     | 30 min   |
-| NBA   | 30 min  | 2.5 hrs   | 30 min   |
-| MLB   | 30 min  | 3.5 hrs   | 30 min   |
+|------|---------|-----------|----------|
+| NFL  | 30 min  | 3.5-4 hrs | 30 min   |
+| NHL  | 30 min  | 3 hrs     | 30 min   |
+| NBA  | 30 min  | 2.5 hrs   | 30 min   |
+| MLB  | 30 min  | 3.5 hrs   | 30 min   |
+| MLS  | 30 min  | 2 hrs     | 30 min   |
 
 Events are removed from the lineup 30 minutes after the postgame block ends.
 
