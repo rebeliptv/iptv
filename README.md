@@ -8,13 +8,14 @@
 [![Docker Image Size](https://img.shields.io/docker/image-size/rebeliptv/iptv/latest?style=for-the-badge&color=1D63ED)](https://hub.docker.com/r/rebeliptv/iptv)
 [![GitHub Release](https://img.shields.io/github/v/release/rebeliptv/iptv?style=for-the-badge&color=22C55E)](https://github.com/rebeliptv/iptv/releases/latest)
 [![License](https://img.shields.io/badge/license-proprietary-8B5CF6?style=for-the-badge)](LICENSE)
-[![Website](https://img.shields.io/badge/website-rebeliptv.net-FF6B35?style=for-the-badge)](https://www.rebeliptv.net)
+[![Website](https://img.shields.io/badge/website-rebeliptv.com-FF6B35?style=for-the-badge)](https://www.rebeliptv.com)
 
 Aggregates live TV channels and sports events into a single M3U playlist with full EPG guide data.<br>
 Streams are fully proxied so upstream sources are never exposed to clients.<br>
-Designed for **Jellyfin**, **Plex**, **Emby**, and other IPTV apps.
+Designed for **Jellyfin**, **Emby**, and other apps that take an M3U playlist and an XMLTV guide.<br>
+Plex works only through its unofficial M3U path ([see below](#plex)) — its Live TV & DVR is built for HDHomeRun tuners.
 
-**🌐 New here? Follow the step-by-step [setup guide at rebeliptv.net](https://www.rebeliptv.net).**
+**🌐 New here? Follow the step-by-step [setup guide at rebeliptv.com](https://www.rebeliptv.com).**
 
 </div>
 
@@ -77,11 +78,12 @@ Designed for **Jellyfin**, **Plex**, **Emby**, and other IPTV apps.
 - **Live sports events** -- see [Supported Live Sports](#supported-live-sports) below
 - **Custom M3U sources** -- add your own M3U URLs or upload files to merge into the playlist; edit the URL or replace the uploaded file later without losing channel numbers
 - **Customize your lineup** -- enable/disable channels and drag to reorder them from the dashboard; disabled channels drop out of your playlist and guide, and both choices persist across restarts and upgrades
+- **Choose your countries** -- pick which countries' channels you carry from **Settings → Channel Countries**; turn a country off and its channels leave the playlist, guide, dashboard, and search everywhere
 - **Channel categories** -- Sports, News, Local, Kids, Movies, Entertainment, Lifestyle, Documentary, and more
 - **Local station detection** -- identifies call signs (KABC, WCBS, etc.)
 - **Multi-source stream fallback** -- events and channels automatically try alternate providers if the primary feed fails, both at refresh time and mid-watch
 - **Broadcast-network affiliate fallback** -- ABC / CBS / NBC / FOX automatically fall through to the flagship East Coast affiliate when the network's own feed isn't playable
-- **Stream health monitoring** -- automatically detects offline channels and recovers them
+- **Stream health monitoring** -- automatically detects offline channels — and ones that answer but carry no audio or video — and recovers them from a working feed
 - **ESPN-powered live sports** -- real-time scores, period-by-period linescore, venue, weather, and game situation data
 - **Rich EPG data** -- 24-hour XMLTV guide with show descriptions, episode info, season/episode numbers, TV ratings, and show/movie poster artwork
 - **Horizontal timeline guide** -- scrollable program grid with sticky channel column and current-time indicator
@@ -119,7 +121,7 @@ ESPN is the source of truth for all schedules, team names, and scores — scrape
 
 ## Quick Start
 
-> **Prefer a guided walkthrough?** The [setup guide at rebeliptv.net](https://www.rebeliptv.net) builds a Docker configuration tailored to your system (ports, timezone, in-app updates) and walks you through connecting Jellyfin / Plex. The manual setup below is the reference.
+> **Prefer a guided walkthrough?** The [setup guide at rebeliptv.com](https://www.rebeliptv.com) builds a Docker configuration tailored to your system (ports, timezone, in-app updates) and walks you through connecting Jellyfin / Plex. The manual setup below is the reference.
 
 ### Docker Compose (recommended)
 
@@ -215,11 +217,27 @@ Without a key, playlist and EPG are accessible to anyone on your network.
 
 ### Plex
 
-Plex's built-in **Live TV & DVR** takes an M3U tuner and XMLTV guide much like Jellyfin, but note it **requires an active Plex Pass** — without one, Plex won't let you add an M3U tuner.
+> [!WARNING]
+> **Plex is a limited target — Jellyfin is the supported one.**
+>
+> Plex's **Live TV & DVR** is built around **HDHomeRun** network tuners. An M3U playlist plus an
+> XMLTV guide is **not** a first-class tuner type in Plex the way it is in Jellyfin, and this server
+> serves M3U + XMLTV — it does not emulate an HDHomeRun.
+>
+> Plex does have an M3U path, but it **requires an active Plex Pass**, is not officially supported,
+> and the steps have changed between Plex releases. Treat Plex as best-effort: if Live TV needs to
+> just work, use Jellyfin.
 
-1. **Settings → Live TV & DVR → Set up Plex Tuner**, then choose the **"Have an M3U-based tuner"** option
-2. M3U URL: `http://<server-ip>:8080/playlist?key=YOUR_KEY`
-3. XMLTV Guide URL: `http://<server-ip>:8080/epg?key=YOUR_KEY`
+If you still want to try Plex, follow **Plex's own current M3U / XMLTV setup instructions** — they are
+the authority on their own flow, and it moves. Broadly it lives under **Settings → Live TV & DVR →
+Set up Plex Tuner**, where you look for the M3U-based tuner option rather than a detected HDHomeRun.
+
+Give it these two URLs:
+
+| Plex asks for | Give it |
+|---|---|
+| Tuner / M3U | `http://<server-ip>:8080/playlist?key=YOUR_KEY` |
+| XMLTV guide  | `http://<server-ip>:8080/epg?key=YOUR_KEY` |
 
 ### General IPTV Clients
 
@@ -240,10 +258,10 @@ On first launch a short setup wizard walks you through choosing a channel source
 ### Pages
 
 - **Dashboard** -- channel/event counts, online/offline stats, live sports with start times and scores, playlist copy buttons
-- **Channels** -- searchable and filterable channel list (filter by category, country, and status) with category badges and online/offline status; search matches the channel name, network, and city. Click a channel for its detail page with video player and program guide.
+- **Channels** -- searchable and filterable channel list (filter by category, country, and status) with category badges and online/offline status; search matches the channel name, network, and city. Browse it as a classic list or as **country tabs with channel cards** (switch in **Settings → Layout**), with a separate **Custom** tab for your own sources. Click a channel for its detail page with video player and program guide.
 - **Guide** -- horizontal timeline program grid with sticky channel column, current-time indicator, and scrollable schedule
 - **Sports** -- live and upcoming events grouped by date with team logos, live scores, and "Stream Not Available Yet" indicators for upcoming games. Click an event for its detail page with live scoreboard and video player.
-- **Settings** -- grouped into **Server**, **Sources**, **Connect**, **Playback**, and **Access** sections: API key management, dashboard login & admin-account management, theme switcher, custom M3U source management, channel lineup management (enable/disable and drag-to-reorder), source-mode toggle (local scraping vs Rebel IPTV hosted feeds), Docker container-hostname toggle for endpoint URLs, optional channel numbers in the playlist, adjustable stream buffering, server info, version update check with one-click in-app upgrade, and targeted manual refresh (channels / guide / events / all)
+- **Settings** -- grouped into **Server**, **Sources**, **Connect**, **Playback**, and **Access** sections: API key management, dashboard login & admin-account management, theme switcher, custom M3U source management, channel lineup management (enable/disable and drag-to-reorder), channel-country selection, sports options (carry sports, sports-only mode, leagues), channel layout (classic list or country-tab cards), source-mode toggle (local scraping vs Rebel IPTV hosted feeds), Docker container-hostname toggle for endpoint URLs, optional channel numbers in the playlist, adjustable stream buffering, server info, version update check with one-click in-app upgrade, and targeted manual refresh (channels / guide / events / all)
 
 ### Channel Detail
 
@@ -268,10 +286,9 @@ Click any sport event to see:
 | `PORT`          | `8080`       | Server port                                                                                                  |
 | `HOST`          | `0.0.0.0`    | Bind address                                                                                                 |
 | `CRON_SCHEDULE` | `30 * * * *` | Data refresh schedule (cron)                                                                                 |
-| `SPORTS_EVENTS` | `true`       | Set to `false` to disable sports events                                                                      |
-| `SPORTS_MODE`   | `false`      | Sports-only mode — disables TV channels, serves only live events                                             |
-| `LEAGUES`       | `""`         | Comma-separated league codes (e.g. `NHL,NBA,MLB`) — empty means the defaults (NFL, NBA, NHL, MLB, MLS, FIFA) |
 | `TZ`            | `Etc/UTC`    | Timezone                                                                                                     |
+
+> **Sports options** — whether to carry sports at all, sports-only mode, and which leagues to carry — are now dashboard settings under **Settings → Sports**, not environment variables. (An existing deployment's `SPORTS_EVENTS` / `SPORTS_MODE` / `LEAGUES` env values are still honoured once, as a one-time seed on upgrade; after that the dashboard owns them.)
 
 > **Source mode (local scraping vs hosted feeds)** is a dashboard setting, not an environment variable — see [Hosted Feeds](#hosted-feeds).
 
