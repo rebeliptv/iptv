@@ -82,9 +82,10 @@ Plex works only through its unofficial M3U path ([see below](#plex)) — its Liv
 - **Channel categories** -- Sports, News, Local, Kids, Movies, Entertainment, Lifestyle, Documentary, and more
 - **Local station detection** -- identifies call signs (KABC, WCBS, etc.)
 - **Multi-source stream fallback** -- events and channels automatically try alternate providers if the primary feed fails, both at refresh time and mid-watch
-- **Broadcast-network affiliate fallback** -- ABC / CBS / NBC / FOX automatically fall through to the flagship East Coast affiliate when the network's own feed isn't playable
+- **Local ABC / CBS / NBC / FOX** -- these four pinned networks carry your own market's local affiliate, for both the live feed and the guide. By default the market comes from your server's timezone (Eastern → New York, Central → Chicago, Mountain → Denver, Pacific → Los Angeles); set your exact market in **Settings → Content → Local Market** (Boston, Seattle, Dallas, Atlanta and ~35 others). If your local station has no working feed they borrow the biggest station in the same timezone, guide included, so the picture and the listings always agree — never across a timezone. CW / PBS / ION have no local option and stay on their national feed.
 - **Stream health monitoring** -- automatically detects offline channels — and ones that answer but carry no audio or video — and recovers them from a working feed
 - **ESPN-powered live sports** -- real-time scores, period-by-period linescore, venue, weather, and game situation data
+- **Sport-specific event pages** -- baseball and soccer games get a layout built for that sport (team comparison bars, pitching matchup / recent form, head-to-head, match timeline) instead of one generic card; other sports use the standard layout
 - **Rich EPG data** -- 24-hour XMLTV guide with show descriptions, episode info, season/episode numbers, TV ratings, and show/movie poster artwork
 - **Horizontal timeline guide** -- scrollable program grid with sticky channel column and current-time indicator
 - **Theme switcher** -- light, dark, or auto (system preference detection)
@@ -99,7 +100,7 @@ Plex works only through its unofficial M3U path ([see below](#plex)) — its Liv
 - Sport events sorted by start time with team logos and pregame/postgame EPG entries
 - API key protection for playlist and EPG endpoints
 - **Optional dashboard login** -- protect the dashboard with a username/password and add more admin accounts under Settings; leave it unset to keep the dashboard open on a trusted network
-- **Guided first-run setup** -- a wizard walks first-time users through choosing a channel source, an optional playlist key, an optional dashboard login, and connecting Jellyfin / Plex
+- **Guided first-run setup** -- a wizard walks first-time users through choosing a channel source, picking their local market and which channel countries to carry, turning live sports on or off, an optional playlist key, an optional dashboard login, and connecting Jellyfin / Plex
 - Automatic hourly refresh with offline channel recovery every 5 minutes
 - Graceful shutdown with SIGTERM handling
 - Multi-architecture Docker support (amd64, arm64)
@@ -253,15 +254,15 @@ Give it these two URLs:
 
 Access the dashboard at `http://<server-ip>:8080`.
 
-On first launch a short setup wizard walks you through choosing a channel source, optionally adding a playlist key, optionally setting a dashboard login, and copying your playlist / guide URLs into your player. You can skip it and change anything later in Settings.
+On first launch a short setup wizard walks you through choosing a channel source, picking your content (local market, live sports on/off, which channel countries to carry), optionally adding a playlist key, optionally setting a dashboard login, and copying your playlist / guide URLs into your player. You can skip it and change anything later in Settings.
 
 ### Pages
 
-- **Dashboard** -- channel/event counts, online/offline stats, live sports with start times and scores, playlist copy buttons
+- **Dashboard** -- channel/event counts, online/offline stats, live sports with start times and scores, playlist copy buttons, and a **Delivery Health** panel showing how reliably your box has been serving (failovers and why, whether a channel ran out of working feeds while someone was watching, feeds currently resting) — hover any label for an explanation
 - **Channels** -- searchable and filterable channel list (filter by category, country, and status) with category badges and online/offline status; search matches the channel name, network, and city. Browse it as a classic list or as **country tabs with channel cards** (switch in **Settings → Layout**), with a separate **Custom** tab for your own sources. Click a channel for its detail page with video player and program guide.
 - **Guide** -- horizontal timeline program grid with sticky channel column, current-time indicator, and scrollable schedule
 - **Sports** -- live and upcoming events grouped by date with team logos, live scores, and "Stream Not Available Yet" indicators for upcoming games. Click an event for its detail page with live scoreboard and video player.
-- **Settings** -- grouped into **Server**, **Sources**, **Connect**, **Playback**, and **Access** sections: API key management, dashboard login & admin-account management, theme switcher, custom M3U source management, channel lineup management (enable/disable and drag-to-reorder), channel-country selection, sports options (carry sports, sports-only mode, leagues), channel layout (classic list or country-tab cards), source-mode toggle (local scraping vs Rebel IPTV hosted feeds), Docker container-hostname toggle for endpoint URLs, optional channel numbers in the playlist, adjustable stream buffering, server info, version update check with one-click in-app upgrade, and targeted manual refresh (channels / guide / events / all)
+- **Settings** -- grouped into **Server**, **Content**, **Connect**, **Playback**, and **Access** sections: API key management, dashboard login & admin-account management, theme switcher, custom M3U source management, channel lineup management (enable/disable and drag-to-reorder), local market selection for the pinned ABC / CBS / NBC / FOX channels, channel-country selection, sports options (carry sports, sports-only mode, leagues), channel layout (classic list or country-tab cards), source-mode toggle (local scraping vs Rebel IPTV hosted feeds), Docker container-hostname toggle for endpoint URLs, optional channel numbers in the playlist, adjustable stream buffering, server info, version update check with one-click in-app upgrade, and targeted manual refresh (channels / guide / events / all)
 
 ### Channel Detail
 
@@ -274,10 +275,12 @@ Click any channel to see:
 ### Sport Event Detail
 
 Click any sport event to see:
+- A broadcast-style scoreboard — each team on the outside, the score either side of a period-by-period box score, the clock beneath
 - Team logos with live scores from ESPN (updates every 30 seconds)
-- Period-by-period linescore
-- Game status, venue, weather, and in-game situation
+- Game status, venue, weather, and in-game situation, in the same place for every sport
 - Embedded video player with automatic fallback to alternate stream sources
+
+Baseball and soccer games render a layout built for that sport — team comparison bars, pitching matchup, season leaders, recent form and the injury report for baseball; recent form, head-to-head, top scorers and a live match timeline for soccer. Other sports use the standard layout.
 
 ## Configuration
 
@@ -286,7 +289,7 @@ Click any sport event to see:
 | `PORT`          | `8080`       | Server port                                                                                                  |
 | `HOST`          | `0.0.0.0`    | Bind address                                                                                                 |
 | `CRON_SCHEDULE` | `30 * * * *` | Data refresh schedule (cron)                                                                                 |
-| `TZ`            | `Etc/UTC`    | Timezone                                                                                                     |
+| `TZ`            | `Etc/UTC`    | Timezone. Also picks the default local market for the pinned ABC / CBS / NBC / FOX channels — override it in **Settings → Content → Local Market** |
 
 > **Sports options** — whether to carry sports at all, sports-only mode, and which leagues to carry — are now dashboard settings under **Settings → Sports**, not environment variables. (An existing deployment's `SPORTS_EVENTS` / `SPORTS_MODE` / `LEAGUES` env values are still honoured once, as a one-time seed on upgrade; after that the dashboard owns them.)
 
@@ -371,7 +374,7 @@ Each event gets EPG entries with pregame, game, and postgame blocks:
 | MLB  | 30 min  | 3.5 hrs   | 30 min   |
 | MLS  | 30 min  | 2 hrs     | 30 min   |
 
-Events are removed from the lineup 30 minutes after the postgame block ends.
+An event joins your playlist and guide once its feed is confirmed live — within about a minute of the game starting, and only if a feed actually turns up — rather than as soon as a feed page is found for it hours ahead. A finished game is not dropped at the final whistle either: it stays listed for as long as its feed keeps running, so the channel rides through post-game coverage instead of cutting off mid-broadcast.
 
 ### Stream Buffering
 
