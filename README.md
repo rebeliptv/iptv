@@ -140,6 +140,7 @@ services:
         # the box. Uncomment any you need (see Configuration below):
         # environment:
         #     TZ: "America/New_York"   # set to YOUR timezone, e.g. Europe/London, America/Chicago, Etc/UTC
+        #     HEADLESS: "true"         # no browser on this box — see Headless Mode below
         volumes:
             - iptv-data:/app/data
             - /var/run/docker.sock:/var/run/docker.sock   # enables one-click in-app updates
@@ -187,6 +188,21 @@ docker compose up -d
 ```
 
 Your data lives in the `iptv-data` volume, so this just swaps in the new image — nothing is lost.
+
+> **`docker restart` is not an update.** It starts the *same container* again on the *same old image*, so the new version you just pulled is never used and the server comes back reporting that it's still out of date. `docker compose up -d` is what replaces the container — it notices the newer image and recreates it for you.
+
+### Headless Mode
+
+If nothing on the box has a browser — a Kodi/LibreELEC box, a NAS, a headless server you only reach over SSH — set `HEADLESS=true`:
+
+```yaml
+environment:
+    HEADLESS: "true"
+```
+
+The update prompt is part of the dashboard, so an instance nobody opens never gets told a new version exists, and older versions eventually stop working as sources change. In headless mode the server checks for itself and installs new versions on its own, waiting for a moment when nothing is streaming so it never interrupts a viewer. It also skips the first-run setup screen and starts building your playlist straight away, so a fresh install needs no visit to the dashboard at all.
+
+This needs the `/var/run/docker.sock` mount from the setup above (the same one the **Update now** button uses) and the `:latest` image tag. Without them the server logs how to update by hand instead. Everything else — the dashboard, settings, the API — works exactly as it always did; the flag only changes what happens when nobody is watching.
 
 ## Setting Up an API Key
 
@@ -290,6 +306,7 @@ Baseball and soccer games render a layout built for that sport — team comparis
 | `HOST`          | `0.0.0.0`    | Bind address                                                                                                 |
 | `CRON_SCHEDULE` | `30 * * * *` | Data refresh schedule (cron)                                                                                 |
 | `TZ`            | `Etc/UTC`    | Timezone. Also picks the default local market for the pinned ABC / CBS / NBC / FOX channels — override it in **Settings → Content → Local Market** |
+| `HEADLESS`      | `false`      | For boxes with no browser — see [Headless Mode](#headless-mode)                                              |
 
 > **Sports options** — whether to carry sports at all, sports-only mode, and which leagues to carry — are now dashboard settings under **Settings → Sports**, not environment variables. (An existing deployment's `SPORTS_EVENTS` / `SPORTS_MODE` / `LEAGUES` env values are still honoured once, as a one-time seed on upgrade; after that the dashboard owns them.)
 
