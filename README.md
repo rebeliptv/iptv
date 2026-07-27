@@ -180,6 +180,8 @@ When a newer version is available, an **Update now** button appears on the **Das
 
 The button shows only on the `:latest` image when a newer release exists; it's hidden on version-pinned images (e.g. `:1.3.0`), which keep updating with the standard `docker pull` method below.
 
+If a server ever gets too far out of date to run at all, it stops serving channels — but it still answers its usual address with a page telling you so, carrying the same **Update now** button and the commands to run if one-click updates aren't available on your setup. Left alone for half an hour it will go ahead and update itself, since a server in that state isn't serving anything anyway.
+
 ### Standard update
 
 ```bash
