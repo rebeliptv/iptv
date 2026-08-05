@@ -76,6 +76,7 @@ Plex works only through its unofficial M3U path ([see below](#plex)) — its Liv
 
 - **430+ TV channels** across the US, Canada, and the UK, with logos and persistent channel numbers that never reshuffle
 - **Live sports events** -- see [Supported Live Sports](#supported-live-sports) below
+- **A channel for your favourite team** -- pick a team and it gets a permanent channel of its own that carries whichever game they're playing, home or away, and shows when they're next on the rest of the time -- see [Favourite Team Channels](#favourite-team-channels)
 - **Custom M3U sources** -- add your own M3U URLs or upload files to merge into the playlist; edit the URL or replace the uploaded file later without losing channel numbers
 - **Customize your lineup** -- enable/disable channels and drag to reorder them from the dashboard; disabled channels drop out of your playlist and guide, and both choices persist across restarts and upgrades
 - **Choose your countries** -- pick which countries' channels you carry from **Settings → Channel Countries**; turn a country off and its channels leave the playlist, guide, dashboard, and search everywhere
@@ -280,7 +281,8 @@ On first launch a short setup wizard walks you through choosing a channel source
 - **Channels** -- searchable and filterable channel list (filter by category, country, and status) with category badges and online/offline status; search matches the channel name, network, and city. Browse it as a classic list or as **country tabs with channel cards** (switch in **Settings → Layout**), with a separate **Custom** tab for your own sources. Click a channel for its detail page with video player and program guide.
 - **Guide** -- horizontal timeline program grid with sticky channel column, current-time indicator, and scrollable schedule
 - **Sports** -- live and upcoming events grouped by date with team logos, live scores, and "Stream Not Available Yet" indicators for upcoming games. Click an event for its detail page with live scoreboard and video player.
-- **Settings** -- grouped into **Server**, **Content**, **Connect**, **Playback**, and **Access** sections: API key management, dashboard login & admin-account management, theme switcher, custom M3U source management, channel lineup management (enable/disable and drag-to-reorder), local market selection for the pinned ABC / CBS / NBC / FOX channels, channel-country selection, sports options (carry sports, sports-only mode, leagues), channel layout (classic list or country-tab cards), source-mode toggle (local scraping vs Rebel IPTV hosted feeds), Docker container-hostname toggle for endpoint URLs, optional channel numbers in the playlist, adjustable stream buffering, server info, version update check with one-click in-app upgrade, and targeted manual refresh (channels / guide / events / all)
+- **Settings** -- grouped into **Server**, **Sources**, **Content**, **Connect**, **Playback**, and **Access** sections: API key management, dashboard login & admin-account management, theme switcher, custom M3U source management, channel lineup management (enable/disable and drag-to-reorder), local market selection for the pinned ABC / CBS / NBC / FOX channels, channel-country selection, sports options (carry sports, sports-only mode, leagues), favourite-team channels, channel layout (classic list or country-tab cards), source-mode toggle (local scraping vs Rebel IPTV hosted feeds), Docker container-hostname toggle for endpoint URLs, optional channel numbers in the playlist, adjustable stream buffering, server info, version update check with one-click in-app upgrade, and targeted manual refresh (channels / guide / events / all)
+- **Favourite Teams** (**Settings → Content → Favourite Teams**) -- your picks as a set of cards, each showing what its channel is doing right now; add a team by sport or by typing its name, and drag them into the order you want their channel numbers in
 
 ### Channel Detail
 
@@ -309,6 +311,7 @@ Baseball and soccer games render a layout built for that sport — team comparis
 | `CRON_SCHEDULE` | `30 * * * *` | Data refresh schedule (cron)                                                                                 |
 | `TZ`            | `Etc/UTC`    | Timezone. Also picks the default local market for the pinned ABC / CBS / NBC / FOX channels — override it in **Settings → Content → Local Market** |
 | `HEADLESS`      | `false`      | For boxes with no browser — see [Headless Mode](#headless-mode)                                              |
+| `TRUSTED_PROXIES` | *(none)*   | Only if you run behind a reverse proxy — see [Reverse Proxy](#reverse-proxy)                                 |
 
 > **Sports options** — whether to carry sports at all, sports-only mode, and which leagues to carry — are now dashboard settings under **Settings → Sports**, not environment variables. (An existing deployment's `SPORTS_EVENTS` / `SPORTS_MODE` / `LEAGUES` env values are still honoured once, as a one-time seed on upgrade; after that the dashboard owns them.)
 
@@ -379,6 +382,8 @@ Add your own M3U playlists (URL or file upload) from the Settings page. Custom c
 
 Each source can be edited after adding — rename it, change the URL, or upload a replacement M3U file — without losing its channel-number slot. Turn on the optional **Validate** toggle and the server health-checks each stream and marks offline ones red. While a source is being fetched or validated in the background, the entry shows a "loading" pill and updates automatically when the check completes.
 
+**Guide listings.** A guide is picked up automatically when your playlist links one. Plenty of playlists don't — an uploaded file, or a provider that publishes its guide at a separate address — so each source also takes an **EPG URL** of your own, when you add it and when you edit it. Leave it empty and whatever your playlist links is used. Guide entries are matched to your channels by `tvg-id`, and by name when the id doesn't line up, so a hand-made M3U with no ids still gets its listings. The sources list shows how many guide entries each source holds, and when it holds none it says why — the playlist links no guide, the guide couldn't be downloaded, or the guide covers none of your channels.
+
 ### Sports Events
 
 Sport events are scraped, then cross-referenced with ESPN's scoreboard API for accurate start times and canonical team names. Events are sorted by start time across all leagues.
@@ -393,7 +398,17 @@ Each event gets EPG entries with pregame, game, and postgame blocks:
 | MLB  | 30 min  | 3.5 hrs   | 30 min   |
 | MLS  | 30 min  | 2 hrs     | 30 min   |
 
-An event joins your playlist and guide once its feed is confirmed live — within about a minute of the game starting, and only if a feed actually turns up — rather than as soon as a feed page is found for it hours ahead. A finished game is not dropped at the final whistle either: it stays listed for as long as its feed keeps running, so the channel rides through post-game coverage instead of cutting off mid-broadcast.
+An event joins your playlist and guide as soon as a feed is found for it — usually well before kick-off — with the start time in the guide telling you when it begins. Waiting until the feed was confirmed live meant the game only appeared about a minute after it had already started, so a player that reads your lineup once each morning never saw that night's games at all. A finished game is not dropped at the final whistle either: it stays listed for as long as its feed keeps running, so the channel rides through post-game coverage instead of cutting off mid-broadcast.
+
+Event channels are numbered from **5000** in start-time order.
+
+### Favourite Team Channels
+
+Pick a team under **Settings → Content → Favourite Teams** and it gets a channel of its own. Whenever that team plays — home or away — the channel carries the game, so you can tune straight to your team instead of hunting through the night's fixtures for them. The rest of the time it shows a card telling you when they are next on, and the guide lists their upcoming games.
+
+Team channels are numbered from **4000**, just below the individual events, and you choose the order by dragging them. That number is fixed and does not reshuffle, so it is safe to map in your player. A team channel carries the same feed as the event channel for that game, so watching one costs no extra load on your box.
+
+Requires live sports to be on (**Settings → Content → Sports**).
 
 ### Stream Buffering
 
@@ -415,6 +430,15 @@ Channel numbers and the curated channel directory are baked into the image — n
 ## Reverse Proxy
 
 The server auto-detects the correct base URL from `X-Forwarded-Proto` and `X-Forwarded-Host` headers.
+
+Set `TRUSTED_PROXIES` to your proxy's address so the server knows which `X-Forwarded-For` headers to believe when it records who is connecting — a comma-separated list of addresses or CIDR ranges:
+
+```yaml
+environment:
+    - TRUSTED_PROXIES=172.16.0.0/12
+```
+
+Leave it unset and the server trusts no proxy at all, which is the safe default: without it, anyone could put whatever they liked in that header and, for instance, sidestep the dashboard's login rate limit by pretending to be a different visitor each try. Everything still works unset — only the client addresses in your logs and rate limiting are affected.
 
 ### Nginx
 
