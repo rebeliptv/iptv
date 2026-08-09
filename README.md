@@ -12,8 +12,9 @@
 
 Aggregates live TV channels and sports events into a single M3U playlist with full EPG guide data.<br>
 Streams are fully proxied so upstream sources are never exposed to clients.<br>
-Designed for **Jellyfin**, **Emby**, and other apps that take an M3U playlist and an XMLTV guide.<br>
-Plex works only through its unofficial M3U path ([see below](#plex)) — its Live TV & DVR is built for HDHomeRun tuners.
+Designed for **Jellyfin**, **Emby**, **Plex**, and other apps that take an M3U playlist and an XMLTV guide.<br>
+It can also answer as an **HDHomeRun tuner** — Jellyfin, Plex and Emby can all add it that way, and for
+Plex and Emby it is the path their Live TV is built around.
 
 **🌐 New here? Follow the step-by-step [setup guide at rebeliptv.com](https://www.rebeliptv.com).**
 
@@ -97,6 +98,9 @@ Plex works only through its unofficial M3U path ([see below](#plex)) — its Liv
 - **Adjustable stream buffering** -- optionally hold a few seconds of each live feed in memory before it reaches your player, so a brief provider hiccup drains the buffer instead of freezing the picture; off by default (as close to live as possible) and tunable in **Settings → Playback**
 - **Cache survives restarts** -- the playlist, guide, and in-flight stream tokens are restored on boot, so clients keep playing through a container restart
 - **One-click in-app updates** -- upgrade to the latest version straight from the dashboard with an **Update now** button, no command line needed (see [Updating](#updating))
+- **Answers as an HDHomeRun tuner** -- Plex and Emby build their Live TV around HDHomeRun hardware, so
+  the server can present itself as one and be added directly, no Plex Pass and no M3U-tuner flow
+  (**Settings → Connect**; see [Plex & Emby](#plex--emby))
 - Continuous MPEG-TS stream proxy (works like a real TV tuner for Jellyfin/ffmpeg)
 - Sport events sorted by start time with team logos and pregame/postgame EPG entries
 - API key protection for playlist and EPG endpoints
@@ -235,29 +239,63 @@ Without a key, playlist and EPG are accessible to anyone on your network.
 - Ignore DTS (decoding timestamp): **enabled** — makes the tuner tolerant of minor timing hiccups in a live feed instead of erroring on them. Not required (streams are already clean), but a harmless safety margin against a flaky source.
 - Read input at native frame rate: **enabled**
 
-### Plex
+**Or add it as an HDHomeRun tuner.** Jellyfin takes both types — pick **HDHomeRun** instead of
+**M3U Tuner** at step 2 and enter `<server-ip>:8080`. The stream you get is identical either way.
+The M3U route is listed first here for one reason: your playlist URL is protected by your API key
+and the tuner's endpoints cannot be, so on a network you do not fully trust, M3U is the safer of the
+two. See [Plex & Emby](#plex--emby) for the details that apply to any HDHomeRun client, and apply
+whichever of the tuner settings above Jellyfin offers for that tuner type.
 
-> [!WARNING]
-> **Plex is a limited target — Jellyfin is the supported one.**
->
-> Plex's **Live TV & DVR** is built around **HDHomeRun** network tuners. An M3U playlist plus an
-> XMLTV guide is **not** a first-class tuner type in Plex the way it is in Jellyfin, and this server
-> serves M3U + XMLTV — it does not emulate an HDHomeRun.
->
-> Plex does have an M3U path, but it **requires an active Plex Pass**, is not officially supported,
-> and the steps have changed between Plex releases. Treat Plex as best-effort: if Live TV needs to
-> just work, use Jellyfin.
+### Plex & Emby
 
-If you still want to try Plex, follow **Plex's own current M3U / XMLTV setup instructions** — they are
-the authority on their own flow, and it moves. Broadly it lives under **Settings → Live TV & DVR →
-Set up Plex Tuner**, where you look for the M3U-based tuner option rather than a detected HDHomeRun.
+Plex and Emby both build their Live TV around **HDHomeRun** network tuners, so this server can
+answer as one. That is the supported path for both — no Plex Pass, and no M3U-tuner flow that moves
+between releases. (Jellyfin can use the same tuner; see [Jellyfin](#jellyfin) for why the M3U route
+is suggested there instead.) The rest of this section applies to any HDHomeRun client.
 
-Give it these two URLs:
+Turn on **Act as an HDHomeRun tuner** in **Settings → Connect** (it is on by default), then add the
+server by address.
+
+> [!IMPORTANT]
+> The tuner's endpoints are **not protected by your API key**. The HDHomeRun protocol has no field
+> to carry one, so anything that can reach this server can read your channel lineup. Turn it on for a
+> trusted or local network — not one exposed to the internet. Your playlist and guide URLs are still
+> key-protected as normal.
+
+**Plex**
+
+1. **Settings → Live TV & DVR → Set up Plex DVR**
+2. This server does not announce itself on your network — that is deliberate, so it never advertises
+   your lineup to everything on the LAN. Click **Don't see your HDHomeRun?** and enter
+   `<server-ip>:8080`
+3. Skip the postal-code / antenna lineup step
+4. Choose **Have an XMLTV guide?** and give it `http://<server-ip>:8080/epg?key=YOUR_KEY`
+5. Check the channel mapping Plex proposes — channels match by number and name — then save
+
+**Emby**
+
+Same shape: **Live TV → Add tuner → HDHomeRun**, enter `<server-ip>:8080`, then add the same EPG URL
+as an XMLTV guide source.
+
+**How many channels at once**
+
+Both clients ask the tuner how many streams it can serve. That number is **Settings → Connect →
+Simultaneous streams**, and it is a real limit on every way of connecting — see
+[Simultaneous Streams](#simultaneous-streams).
+
+<details>
+<summary>Plex via M3U instead (not recommended)</summary>
+
+Plex does have an M3U path, but it **requires an active Plex Pass**, is not officially supported, and
+the steps have changed between Plex releases. Prefer the tuner above. If you still want it, follow
+Plex's own current M3U / XMLTV instructions — they are the authority on their own flow — and give it:
 
 | Plex asks for | Give it |
 |---|---|
 | Tuner / M3U | `http://<server-ip>:8080/playlist?key=YOUR_KEY` |
 | XMLTV guide  | `http://<server-ip>:8080/epg?key=YOUR_KEY` |
+
+</details>
 
 ### General IPTV Clients
 
@@ -268,6 +306,31 @@ Give it these two URLs:
 | EPG Guide (Gzip) | `http://<server-ip>:8080/epg.gz?key=YOUR_KEY`   |
 
 > **Note:** The `?key=` parameter is only required if an API key has been generated in the web dashboard under **Settings**.
+
+## Simultaneous Streams
+
+**Settings → Connect → Simultaneous streams** sets how many channels this server will play at once.
+
+It applies to **every** way of connecting — the HDHomeRun tuner, an M3U playlist, and this dashboard.
+Watching the same channel on several devices counts as **one**, because they share a single feed out
+to the source; it is a limit on distinct channels, not on people.
+
+| | |
+|---|---|
+| Default | **4** |
+| Range | 1 – 32 |
+
+Ask for a channel beyond the limit and it shows a **stream limit reached** card rather than failing,
+then starts on its own as soon as another channel stops — no need to go back and pick it again.
+
+Set it to match what the line behind your channels can actually carry. Too high and the source
+refuses first, which reaches you as its error rather than ours, with nothing to explain it. Too low
+and you meet the card sooner than you need to.
+
+> [!NOTE]
+> Before this release the number was only advertised to Plex, Emby and Channels DVR — nothing
+> enforced it. It is now a real limit, so a setup regularly playing more than **4** channels at once
+> needs the number raised.
 
 ## Web Dashboard
 
