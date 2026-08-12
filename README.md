@@ -14,7 +14,8 @@ Aggregates live TV channels and sports events into a single M3U playlist with fu
 Streams are fully proxied so upstream sources are never exposed to clients.<br>
 Designed for **Jellyfin**, **Emby**, **Plex**, and other apps that take an M3U playlist and an XMLTV guide.<br>
 It can also answer as an **HDHomeRun tuner** — Jellyfin, Plex and Emby can all add it that way, and for
-Plex and Emby it is the path their Live TV is built around.
+Plex and Emby it is the path their Live TV is built around.<br>
+The web dashboard is available in **19 languages**.
 
 **🌐 New here? Follow the step-by-step [setup guide at rebeliptv.com](https://www.rebeliptv.com).**
 
@@ -78,6 +79,7 @@ Plex and Emby it is the path their Live TV is built around.
 - **430+ TV channels** across the US, Canada, and the UK, with logos and persistent channel numbers that never reshuffle
 - **Live sports events** -- see [Supported Live Sports](#supported-live-sports) below
 - **A channel for your favourite team** -- pick a team and it gets a permanent channel of its own that carries whichever game they're playing, home or away, and shows when they're next on the rest of the time -- see [Favourite Team Channels](#favourite-team-channels)
+- **The dashboard speaks your language** -- 19 of them: Arabic, Simplified and Traditional Chinese, Dutch, English, Finnish, French, German, Hindi, Indonesian, Italian, Japanese, Korean, Malay, Norwegian, Portuguese, Spanish, Swedish, and Urdu. Your browser's language is picked up the first time you open the dashboard, and the globe in the top bar changes it any time. The choice is stored on the server rather than in the browser, so it follows you to your phone and your TV box -- and dates, times, durations and temperatures follow it too, with Arabic and Urdu laying the whole dashboard out right-to-left
 - **Custom M3U sources** -- add your own M3U URLs or upload files to merge into the playlist; edit the URL or replace the uploaded file later without losing channel numbers
 - **Customize your lineup** -- enable/disable channels and drag to reorder them from the dashboard; disabled channels drop out of your playlist and guide, and both choices persist across restarts and upgrades
 - **Choose your countries** -- pick which countries' channels you carry from **Settings → Channel Countries**; turn a country off and its channels leave the playlist, guide, dashboard, and search everywhere
@@ -95,7 +97,7 @@ Plex and Emby it is the path their Live TV is built around.
 - **Docker-network friendly URLs** -- one-click toggle in Settings switches copied playlist / EPG URLs between the dashboard's origin and the container's internal hostname, so Jellyfin / Plex containers on the same Docker network work without hand-editing
 - **Targeted refresh controls** -- refresh just channels, just events, just the guide, or everything
 - **Automatic failover** -- a brief provider hiccup is smoothed from the on-server buffer, and a source that goes bad is swapped for a working one on the next reconnect, so the stream recovers instead of freezing on a dead feed
-- **Adjustable stream buffering** -- optionally hold a few seconds of each live feed in memory before it reaches your player, so a brief provider hiccup drains the buffer instead of freezing the picture; off by default (as close to live as possible) and tunable in **Settings → Playback**
+- **Adjustable stream buffering** -- the server always holds a few seconds of each live feed in memory before it reaches your player, so a brief provider hiccup drains that cushion instead of freezing the picture; add more on top in **Settings → Playback** if your feeds need it
 - **Cache survives restarts** -- the playlist, guide, and in-flight stream tokens are restored on boot, so clients keep playing through a container restart
 - **One-click in-app updates** -- upgrade to the latest version straight from the dashboard with an **Update now** button, no command line needed (see [Updating](#updating))
 - **Answers as an HDHomeRun tuner** -- Plex and Emby build their Live TV around HDHomeRun hardware, so
@@ -344,7 +346,7 @@ On first launch a short setup wizard walks you through choosing a channel source
 - **Channels** -- searchable and filterable channel list (filter by category, country, and status) with category badges and online/offline status; search matches the channel name, network, and city. Browse it as a classic list or as **country tabs with channel cards** (switch in **Settings → Layout**), with a separate **Custom** tab for your own sources. Click a channel for its detail page with video player and program guide.
 - **Guide** -- horizontal timeline program grid with sticky channel column, current-time indicator, and scrollable schedule
 - **Sports** -- live and upcoming events grouped by date with team logos, live scores, and "Stream Not Available Yet" indicators for upcoming games. Click an event for its detail page with live scoreboard and video player.
-- **Settings** -- grouped into **Server**, **Sources**, **Content**, **Connect**, **Playback**, and **Access** sections: API key management, dashboard login & admin-account management, theme switcher, custom M3U source management, channel lineup management (enable/disable and drag-to-reorder), local market selection for the pinned ABC / CBS / NBC / FOX channels, channel-country selection, sports options (carry sports, sports-only mode, leagues), favourite-team channels, channel layout (classic list or country-tab cards), source-mode toggle (local scraping vs Rebel IPTV hosted feeds), Docker container-hostname toggle for endpoint URLs, optional channel numbers in the playlist, adjustable stream buffering, server info, version update check with one-click in-app upgrade, and targeted manual refresh (channels / guide / events / all)
+- **Settings** -- grouped into **Server**, **Sources**, **Content**, **Connect**, **Playback**, and **Access** sections: API key management, dashboard login & admin-account management, theme switcher, dashboard language, custom M3U source management, channel lineup management (enable/disable and drag-to-reorder), local market selection for the pinned ABC / CBS / NBC / FOX channels, channel-country selection, sports options (carry sports, sports-only mode, leagues), favourite-team channels, channel layout (classic list or country-tab cards), source-mode toggle (local scraping vs Rebel IPTV hosted feeds), Docker container-hostname toggle for endpoint URLs, optional channel numbers in the playlist, adjustable stream buffering, server info, version update check with one-click in-app upgrade, and targeted manual refresh (channels / guide / events / all)
 - **Favourite Teams** (**Settings → Content → Favourite Teams**) -- your picks as a set of cards, each showing what its channel is doing right now; add a team by sport or by typing its name, and drag them into the order you want their channel numbers in
 
 ### Channel Detail
@@ -475,9 +477,9 @@ Requires live sports to be on (**Settings → Content → Sports**).
 
 ### Stream Buffering
 
-By default the server streams each live feed as close to real-time as possible. If your feeds occasionally freeze for a second or two when a provider hiccups, turn on **Settings → Playback → Stream buffering** and choose how many seconds to hold. The server then buffers that much of the feed in memory before delivering it to your player, so a brief upstream stall drains that cushion instead of interrupting playback.
+The server always keeps a small cushion of each live feed in memory before delivering it to your player, so a brief upstream stall drains that cushion instead of interrupting playback. Channels hold a few seconds; live events hold longer, because an event feed is the more fragile of the two.
 
-The trade-off is start-up time: a buffered channel begins roughly that many seconds after you tune in — that wait *is* the buffer filling — and it then plays that many seconds behind live. Buffering applies in both local and hosted-feed modes and to any player (Jellyfin, Plex, Emby, or the built-in web player); some players add a little of their own start-up time on top. Leave it off to stay at the live edge.
+If your feeds still freeze for a second or two when a provider hiccups, **Settings → Playback → Stream buffering** adds more on top of that cushion. The trade-off is start-up time: the extra seconds you add are seconds a channel takes to begin after you tune in — that wait *is* the buffer filling — and it then plays that much further behind live. Buffering applies in both local and hosted-feed modes and to any player (Jellyfin, Plex, Emby, or the built-in web player); some players add a little of their own start-up time on top. Leave the setting at zero for the closest thing to live.
 
 ## Persistent Data
 
