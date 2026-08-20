@@ -1,0 +1,24 @@
+# Dependabot — automated dependency-update PRs.
+# Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates
+#
+# This config must live in the iptv repo (rebeliptv/iptv), not the parent
+# development superproject — Dependabot reads each repo's own workflows and
+# does not descend into git submodules. Every other repo in the set already
+# has one; this repo carrying no app code is exactly why it was missed, and
+# why its single action sat two majors behind and unpinned while the rest
+# stayed current.
+version: 2
+updates:
+  # GitHub Actions pinned in .github/workflows/*.yml (actions/stale).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: ci
+    # One grouped PR for all action bumps instead of one per action.
+    groups:
+      github-actions:
+        patterns: ["*"]
