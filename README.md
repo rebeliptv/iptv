@@ -91,7 +91,7 @@ The web dashboard is available in **19 languages**.
 - **ESPN-powered live sports** -- real-time scores, period-by-period linescore, venue, weather, and game situation data
 - **Sport-specific event pages** -- baseball and soccer games get a layout built for that sport (team comparison bars, pitching matchup / recent form, head-to-head, match timeline) instead of one generic card; other sports use the standard layout
 - **Rich EPG data** -- 24-hour XMLTV guide with show descriptions, episode info, season/episode numbers, TV ratings, and show/movie poster artwork
-- **Horizontal timeline guide** -- scrollable program grid with sticky channel column and current-time indicator
+- **Horizontal timeline guide** -- scrollable program grid with sticky channel column and current-time indicator; hover any programme for a card with its synopsis, so you can tell one slot from another without opening anything
 - **Theme switcher** -- light, dark, or auto (system preference detection)
 - **Built-in video player** -- program progress bar, now-playing, up-next preview, and event scoreboards
 - **Docker-network friendly URLs** -- one-click toggle in Settings switches copied playlist / EPG URLs between the dashboard's origin and the container's internal hostname, so Jellyfin / Plex containers on the same Docker network work without hand-editing
@@ -116,16 +116,18 @@ The web dashboard is available in **19 languages**.
 
 The following leagues currently have working live event feeds:
 
-| League   | Sport                       |
-|----------|-----------------------------|
-| **NHL**  | Ice Hockey                  |
-| **NFL**  | American Football           |
-| **NBA**  | Basketball                  |
-| **MLB**  | Baseball                    |
-| **MLS**  | Soccer (US)                 |
-| **FIFA** | Soccer (World Cup / int'l)  |
+| League    | Sport                       |
+|-----------|-----------------------------|
+| **NHL**   | Ice Hockey                  |
+| **NFL**   | American Football           |
+| **NBA**   | Basketball                  |
+| **MLB**   | Baseball                    |
+| **MLS**   | Soccer (US)                 |
+| **FIFA**  | Soccer (World Cup / int'l)  |
+| **CFL**   | Canadian Football           |
+| **NCAAF** | College Football            |
 
-ESPN is the source of truth for all schedules, team names, and scores — scrapers only contribute stream URLs that are cross-referenced against ESPN's canonical game data. Other leagues will be added as upstream feeds become available. To request a new league, [open a feature request](https://github.com/rebeliptv/iptv/issues/new/choose).
+ESPN is the source of truth for all schedules, team names, and scores — scrapers only contribute stream URLs that are cross-referenced against ESPN's canonical game data. The CFL is the exception: ESPN dropped Canadian football after 2022, so its schedule comes from the CFL's own public feed and is treated exactly like the rest. Other leagues will be added as upstream feeds become available. To request a new league, [open a feature request](https://github.com/rebeliptv/iptv/issues/new/choose).
 
 ## Quick Start
 
@@ -330,9 +332,9 @@ refuses first, which reaches you as its error rather than ours, with nothing to 
 and you meet the card sooner than you need to.
 
 > [!NOTE]
-> Before this release the number was only advertised to Plex, Emby and Channels DVR — nothing
-> enforced it. It is now a real limit, so a setup regularly playing more than **4** channels at once
-> needs the number raised.
+> Before **v1.4.0** the number was only advertised to Plex, Emby and Channels DVR — nothing
+> enforced it. It is a real limit from v1.4.0 on, so a setup regularly playing more than **4**
+> channels at once needs the number raised.
 
 ## Web Dashboard
 
@@ -344,8 +346,8 @@ On first launch a short setup wizard walks you through choosing a channel source
 
 - **Dashboard** -- channel/event counts, online/offline stats, live sports with start times and scores, playlist copy buttons, and a **Delivery Health** panel showing how reliably your box has been serving (failovers and why, whether a channel ran out of working feeds while someone was watching, feeds currently resting) — hover any label for an explanation
 - **Channels** -- searchable and filterable channel list (filter by category, country, and status) with category badges and online/offline status; search matches the channel name, network, and city. Browse it as a classic list or as **country tabs with channel cards** (switch in **Settings → Layout**), with a separate **Custom** tab for your own sources. Click a channel for its detail page with video player and program guide.
-- **Guide** -- horizontal timeline program grid with sticky channel column, current-time indicator, and scrollable schedule
-- **Sports** -- live and upcoming events grouped by date with team logos, live scores, and "Stream Not Available Yet" indicators for upcoming games. Click an event for its detail page with live scoreboard and video player.
+- **Guide** -- horizontal timeline program grid with sticky channel column, current-time indicator, and scrollable schedule. Hover a programme and a card opens with its synopsis; descriptions are fetched for a channel the first time you point at its row, so the guide loads no slower than before
+- **Sports** -- live and upcoming events grouped by date with team logos, live scores, and "Stream Not Available Yet" indicators for upcoming games. Click an event for its detail page with live scoreboard and video player. If the schedule service can't be reached, a dismissible banner names which leagues have stopped updating and which are still working, rather than leaving the section quietly empty
 - **Settings** -- grouped into **Server**, **Sources**, **Content**, **Connect**, **Playback**, and **Access** sections: API key management, dashboard login & admin-account management, theme switcher, dashboard language, custom M3U source management, channel lineup management (enable/disable and drag-to-reorder), local market selection for the pinned ABC / CBS / NBC / FOX channels, channel-country selection, sports options (carry sports, sports-only mode, leagues), favourite-team channels, channel layout (classic list or country-tab cards), source-mode toggle (local scraping vs Rebel IPTV hosted feeds), Docker container-hostname toggle for endpoint URLs, optional channel numbers in the playlist, adjustable stream buffering, server info, version update check with one-click in-app upgrade, and targeted manual refresh (channels / guide / events / all)
 - **Favourite Teams** (**Settings → Content → Favourite Teams**) -- your picks as a set of cards, each showing what its channel is doing right now; add a team by sport or by typing its name, and drag them into the order you want their channel numbers in
 
@@ -366,6 +368,8 @@ Click any sport event to see:
 - Embedded video player with automatic fallback to alternate stream sources
 
 Baseball and soccer games render a layout built for that sport — team comparison bars, pitching matchup, season leaders, recent form and the injury report for baseball; recent form, head-to-head, top scorers and a live match timeline for soccer. Other sports use the standard layout.
+
+A football game in progress adds the drive: the down and distance, which team has the ball and where, whether they are in the red zone, and each side's remaining timeouts.
 
 ## Configuration
 
