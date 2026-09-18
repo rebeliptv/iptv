@@ -9,6 +9,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/rebeliptv/iptv?style=for-the-badge&color=22C55E)](https://github.com/rebeliptv/iptv/releases/latest)
 [![License](https://img.shields.io/badge/license-proprietary-8B5CF6?style=for-the-badge)](LICENSE)
 [![Website](https://img.shields.io/badge/website-rebeliptv.com-FF6B35?style=for-the-badge)](https://www.rebeliptv.com)
+[![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-EA4AAA?style=for-the-badge)](https://github.com/sponsors/rebeliptv)
 
 Aggregates live TV channels and sports events into a single M3U playlist with full EPG guide data.<br>
 Streams are fully proxied so upstream sources are never exposed to clients.<br>
@@ -61,7 +62,7 @@ The web dashboard is available in **19 languages**.
 </details>
 
 <details>
-<summary><strong>Sport Event</strong> — live scores from ESPN</summary>
+<summary><strong>Sport Event</strong> — live scores, stats and the stream in one place</summary>
 <br>
 
 ![Sport Event](screenshots/event-detail.png)
@@ -76,21 +77,21 @@ The web dashboard is available in **19 languages**.
 
 ## Features
 
-- **430+ TV channels** across the US, Canada, and the UK, with logos and persistent channel numbers that never reshuffle
-- **Live sports events** -- see [Supported Live Sports](#supported-live-sports) below
+- **450+ TV channels** across the US, Canada, and the UK, with logos and persistent channel numbers that never reshuffle
+- **Live sports events** -- team games on one tab of the Sports page, fight cards and races on another, and all of them together in your playlist and guide -- see [Supported Live Sports](#supported-live-sports) below
 - **A channel for your favourite team** -- pick a team and it gets a permanent channel of its own that carries whichever game they're playing, home or away, and shows when they're next on the rest of the time -- see [Favourite Team Channels](#favourite-team-channels)
 - **The dashboard speaks your language** -- 19 of them: Arabic, Simplified and Traditional Chinese, Dutch, English, Finnish, French, German, Hindi, Indonesian, Italian, Japanese, Korean, Malay, Norwegian, Portuguese, Spanish, Swedish, and Urdu. Your browser's language is picked up the first time you open the dashboard, and the globe in the top bar changes it any time. The choice is stored on the server rather than in the browser, so it follows you to your phone and your TV box -- and dates, times, durations and temperatures follow it too, with Arabic and Urdu laying the whole dashboard out right-to-left
-- **Custom M3U sources** -- add your own M3U URLs or upload files to merge into the playlist; edit the URL or replace the uploaded file later without losing channel numbers
+- **Custom M3U sources** -- add your own M3U URLs or upload files to merge into the playlist, each with its own guide if it needs one (a guide URL or an uploaded XMLTV file); edit the URL or replace the uploaded file later without losing channel numbers
 - **Customize your lineup** -- enable/disable channels and drag to reorder them from the dashboard; disabled channels drop out of your playlist and guide, and both choices persist across restarts and upgrades
-- **Choose your countries** -- pick which countries' channels you carry from **Settings → Channel Countries**; turn a country off and its channels leave the playlist, guide, dashboard, and search everywhere
+- **Choose your countries** -- pick which countries' channels you carry from **Settings → Content → Channel Countries**; turn a country off and its channels leave the playlist, guide, dashboard, and search everywhere
 - **Channel categories** -- Sports, News, Local, Kids, Movies, Entertainment, Lifestyle, Documentary, and more
 - **Local station detection** -- identifies call signs (KABC, WCBS, etc.)
 - **Multi-source stream fallback** -- events and channels automatically try alternate providers if the primary feed fails, both at refresh time and mid-watch
-- **Local ABC / CBS / NBC / FOX** -- these four pinned networks carry your own market's local affiliate, for both the live feed and the guide. By default the market comes from your server's timezone (Eastern → New York, Central → Chicago, Mountain → Denver, Pacific → Los Angeles); set your exact market in **Settings → Content → Local Market** (Boston, Seattle, Dallas, Atlanta and ~35 others). If your local station has no working feed they borrow the biggest station in the same timezone, guide included, so the picture and the listings always agree — never across a timezone. CW / PBS / ION have no local option and stay on their national feed.
+- **Local ABC / CBS / NBC / FOX** -- these four pinned networks carry your own market's local affiliate, for both the live feed and the guide. By default the market comes from your server's timezone (Eastern → New York, Central → Chicago, Mountain → Denver, Pacific → Los Angeles, Alaska → Anchorage, Hawaii → Honolulu); set your exact market in **Settings → Content → Local Market** (Boston, Seattle, Dallas, Miami and more than 30 others). If your local station has no working feed they borrow the biggest station in the same timezone, guide included, so the picture and the listings always agree — never across a timezone. CW / PBS / ION have no local option and stay on their national feed.
 - **Stream health monitoring** -- automatically detects offline channels — and ones that answer but carry no audio or video — and recovers them from a working feed
-- **ESPN-powered live sports** -- real-time scores, period-by-period linescore, venue, weather, and game situation data
-- **Sport-specific event pages** -- baseball and soccer games get a layout built for that sport (team comparison bars, pitching matchup / recent form, head-to-head, match timeline) instead of one generic card; other sports use the standard layout
-- **Rich EPG data** -- 24-hour XMLTV guide with show descriptions, episode info, season/episode numbers, TV ratings, and show/movie poster artwork
+- **Live scores and stats** -- real-time scores, period-by-period linescore, venue, weather, and game situation data, arriving already collected so your server never has to reach the schedule sites itself
+- **Sport-specific event pages** -- baseball, football and soccer games get a layout built for that sport (team comparison bars, pitching matchup, the current drive, recent form, head-to-head, match timeline) instead of one generic card; a fight card lists every bout and a race its full field; other sports use the standard layout
+- **Rich EPG data** -- XMLTV guide covering today and tomorrow, with show descriptions, episode info, season/episode numbers, TV ratings, and show/movie poster artwork
 - **Horizontal timeline guide** -- scrollable program grid with sticky channel column and current-time indicator; hover any programme for a card with its synopsis, so you can tell one slot from another without opening anything
 - **Theme switcher** -- light, dark, or auto (system preference detection)
 - **Built-in video player** -- program progress bar, now-playing, up-next preview, and event scoreboards
@@ -100,6 +101,7 @@ The web dashboard is available in **19 languages**.
 - **Adjustable stream buffering** -- the server always holds a few seconds of each live feed in memory before it reaches your player, so a brief provider hiccup drains that cushion instead of freezing the picture; add more on top in **Settings → Playback** if your feeds need it
 - **Cache survives restarts** -- the playlist, guide, and in-flight stream tokens are restored on boot, so clients keep playing through a container restart
 - **One-click in-app updates** -- upgrade to the latest version straight from the dashboard with an **Update now** button, no command line needed (see [Updating](#updating))
+- **Restart from the dashboard** -- a **Restart Server** button in **Settings → Server** stops and starts the server without a terminal on the host, on any setup; it comes back on the same version with nothing deleted (see [Restarting the server](#restarting-the-server))
 - **Answers as an HDHomeRun tuner** -- Plex and Emby build their Live TV around HDHomeRun hardware, so
   the server can present itself as one and be added directly, no Plex Pass and no M3U-tuner flow
   (**Settings → Connect**; see [Plex & Emby](#plex--emby))
@@ -123,11 +125,12 @@ The following leagues currently have working live event feeds:
 | **NBA**   | Basketball                  |
 | **MLB**   | Baseball                    |
 | **MLS**   | Soccer (US)                 |
-| **FIFA**  | Soccer (World Cup / int'l)  |
 | **CFL**   | Canadian Football           |
 | **NCAAF** | College Football            |
 
-ESPN is the source of truth for all schedules, team names, and scores — scrapers only contribute stream URLs that are cross-referenced against ESPN's canonical game data. The CFL is the exception: ESPN dropped Canadian football after 2022, so its schedule comes from the CFL's own public feed and is treated exactly like the rest. Other leagues will be added as upstream feeds become available. To request a new league, [open a feature request](https://github.com/rebeliptv/iptv/issues/new/choose).
+Schedules, team names and live scores arrive already collected, so your server never has to reach the schedule sites itself; your server's own job is finding the streams and matching each one to its game. If the listings can't be refreshed, the Sports page says they may be out of date rather than looking like a quiet day.
+
+Fight cards and races have their own **Event sports** tab on the Sports page whenever any are on the schedule. Other leagues will be added over time. To request one, [open a feature request](https://github.com/rebeliptv/iptv/issues/new/choose).
 
 ## Quick Start
 
@@ -152,7 +155,7 @@ services:
         #     HEADLESS: "true"         # no browser on this box — see Headless Mode below
         volumes:
             - iptv-data:/app/data
-            - /var/run/docker.sock:/var/run/docker.sock   # enables one-click in-app updates
+            - /var/run/docker.sock:/var/run/docker.sock   # enables in-app updates (see Updating)
         stop_grace_period: 30s
         restart: unless-stopped
 
@@ -215,12 +218,20 @@ The update prompt is part of the dashboard, so an instance nobody opens never ge
 
 This needs the `/var/run/docker.sock` mount from the setup above (the same one the **Update now** button uses) and the `:latest` image tag. Without them the server logs how to update by hand instead. Everything else — the dashboard, settings, the API — works exactly as it always did; the flag only changes what happens when nobody is watching.
 
+## Restarting the server
+
+**Settings → Server → Restart Server** stops and starts the server for you, so a restart no longer means opening a terminal on the machine running it.
+
+It comes back on the **same version** — this is not an update. Nothing is deleted and no setting changes: channels, guide data, metrics and your settings are all kept, because the server writes everything out before it stops. Anyone watching is disconnected and the playlist and guide URLs stop answering until it is back, which is usually a second or two. The dashboard reconnects on its own.
+
+Unlike the **Update now** button, this one does not depend on your setup. With the `/var/run/docker.sock` mount from the setup above it restarts the whole container. Without it, it restarts the server inside the container that is already running — the same reset for almost everything, and the button says which one you are getting. It does **not** need the `:latest` tag either way: a version-pinned server restarts fine, since restarting it changes nothing about what it runs.
+
 ## Setting Up an API Key
 
 Playlist and EPG endpoints can optionally be protected with an API key.
 
 1. Open the web dashboard at `http://<server-ip>:8080`
-2. Go to **Settings**
+2. Go to **Settings → Access**
 3. Click **Generate Key**
 4. Use the key in your client URLs: `http://<server-ip>:8080/playlist?key=YOUR_KEY`
 
@@ -344,11 +355,11 @@ On first launch a short setup wizard walks you through choosing a channel source
 
 ### Pages
 
-- **Dashboard** -- channel/event counts, online/offline stats, live sports with start times and scores, playlist copy buttons, and a **Delivery Health** panel showing how reliably your box has been serving (failovers and why, whether a channel ran out of working feeds while someone was watching, feeds currently resting) — hover any label for an explanation
-- **Channels** -- searchable and filterable channel list (filter by category, country, and status) with category badges and online/offline status; search matches the channel name, network, and city. Browse it as a classic list or as **country tabs with channel cards** (switch in **Settings → Layout**), with a separate **Custom** tab for your own sources. Click a channel for its detail page with video player and program guide.
+- **Dashboard** -- channel/event counts, online/offline stats, live and upcoming sports with start times and scores, what's being watched right now, watch time by hour, your most-watched channels, guide coverage, events by league, playlist copy buttons, and a **Delivery Health** panel showing how reliably your box has been serving (failovers and why, whether a channel ran out of working feeds while someone was watching, feeds currently resting) — hover any label for an explanation
+- **Channels** -- searchable and filterable channel list (filter by category, country, and status) with category badges and online/offline status; search matches the channel name, network, and city. Browse it as a classic list or as **country tabs with channel cards** (switch with the layout buttons at the top of the page), with a separate **Custom** tab for your own sources. Click a channel for its detail page with video player and program guide.
 - **Guide** -- horizontal timeline program grid with sticky channel column, current-time indicator, and scrollable schedule. Hover a programme and a card opens with its synopsis; descriptions are fetched for a channel the first time you point at its row, so the guide loads no slower than before
-- **Sports** -- live and upcoming events grouped by date with team logos, live scores, and "Stream Not Available Yet" indicators for upcoming games. Click an event for its detail page with live scoreboard and video player. If the schedule service can't be reached, a dismissible banner names which leagues have stopped updating and which are still working, rather than leaving the section quietly empty
-- **Settings** -- grouped into **Server**, **Sources**, **Content**, **Connect**, **Playback**, and **Access** sections: API key management, dashboard login & admin-account management, theme switcher, dashboard language, custom M3U source management, channel lineup management (enable/disable and drag-to-reorder), local market selection for the pinned ABC / CBS / NBC / FOX channels, channel-country selection, sports options (carry sports, sports-only mode, leagues), favourite-team channels, channel layout (classic list or country-tab cards), source-mode toggle (local scraping vs Rebel IPTV hosted feeds), Docker container-hostname toggle for endpoint URLs, optional channel numbers in the playlist, adjustable stream buffering, server info, version update check with one-click in-app upgrade, and targeted manual refresh (channels / guide / events / all)
+- **Sports** -- live and upcoming events grouped by date, on two tabs: **Team sports** for games, with team logos and live scores, and **Event sports** for fight cards and races, each card showing the headline bout or the size of the field. Upcoming events show "Stream Not Available Yet" until a feed is found. Click an event for its detail page with live scoreboard and video player. If the listings can't be refreshed, a banner says they may be out of date — and whether the schedule service is behind (it recovers on its own) or your server can't reach it — rather than leaving the page looking like a quiet day
+- **Settings** -- grouped into **Server**, **Sources**, **Content**, **Connect**, **Playback**, and **Access** sections: API key management, dashboard login & admin-account management, theme switcher, dashboard language, custom M3U source management (with each source's guide URL or uploaded guide file), channel lineup management (enable/disable and drag-to-reorder), local market selection for the pinned ABC / CBS / NBC / FOX channels, channel-country selection, sports options (carry sports, sports-only mode, leagues), favourite-team channels, feed source (local scraping vs Rebel IPTV hosted feeds), the HDHomeRun tuner and how many streams play at once, Docker container-hostname toggle for endpoint URLs, optional channel numbers in the playlist, adjustable stream buffering, server info, version update check with one-click in-app upgrade, restarting the server, and targeted manual refresh (channels / guide / events / all)
 - **Favourite Teams** (**Settings → Content → Favourite Teams**) -- your picks as a set of cards, each showing what its channel is doing right now; add a team by sport or by typing its name, and drag them into the order you want their channel numbers in
 
 ### Channel Detail
@@ -363,13 +374,15 @@ Click any channel to see:
 
 Click any sport event to see:
 - A broadcast-style scoreboard — each team on the outside, the score either side of a period-by-period box score, the clock beneath
-- Team logos with live scores from ESPN (updates every 30 seconds)
+- Team logos with live scores, updated about every 15 seconds while the game is on
 - Game status, venue, weather, and in-game situation, in the same place for every sport
 - Embedded video player with automatic fallback to alternate stream sources
 
-Baseball and soccer games render a layout built for that sport — team comparison bars, pitching matchup, season leaders, recent form and the injury report for baseball; recent form, head-to-head, top scorers and a live match timeline for soccer. Other sports use the standard layout.
+Baseball, football and soccer games render a layout built for that sport — team comparison bars, pitching matchup, season leaders, recent form and the injury report for baseball; recent form, head-to-head, top scorers and a live match timeline for soccer. Other sports use the standard layout.
 
 A football game in progress adds the drive: the down and distance, which team has the ball and where, whether they are in the red zone, and each side's remaining timeouts.
+
+A fight card or a race has no two teams, so its page is drawn from the event itself: a fight card lists every bout, main event first, with the winner marked once each is decided, and a race lists its full field.
 
 ## Configuration
 
@@ -381,8 +394,9 @@ A football game in progress adds the drive: the down and distance, which team ha
 | `TZ`            | `Etc/UTC`    | Timezone. Also picks the default local market for the pinned ABC / CBS / NBC / FOX channels — override it in **Settings → Content → Local Market** |
 | `HEADLESS`      | `false`      | For boxes with no browser — see [Headless Mode](#headless-mode)                                              |
 | `TRUSTED_PROXIES` | *(none)*   | Only if you run behind a reverse proxy — see [Reverse Proxy](#reverse-proxy)                                 |
+| `RESET_AUTH`    | `false`      | Locked out of the dashboard? Set to `true` and restart: every dashboard login is removed and the dashboard opens so you can set a new one. Remove it again afterwards — while it is set, logins are cleared on every start |
 
-> **Sports options** — whether to carry sports at all, sports-only mode, and which leagues to carry — are now dashboard settings under **Settings → Sports**, not environment variables. (An existing deployment's `SPORTS_EVENTS` / `SPORTS_MODE` / `LEAGUES` env values are still honoured once, as a one-time seed on upgrade; after that the dashboard owns them.)
+> **Sports options** — whether to carry sports at all, sports-only mode, and which leagues to carry — are now dashboard settings under **Settings → Content → Sports**, not environment variables. (An existing deployment's `SPORTS_EVENTS` / `SPORTS_MODE` / `LEAGUES` env values are still honoured once, as a one-time seed on upgrade; after that the dashboard owns them.)
 
 > **Source mode (local scraping vs hosted feeds)** is a dashboard setting, not an environment variable — see [Hosted Feeds](#hosted-feeds).
 
@@ -398,7 +412,7 @@ A football game in progress adds the drive: the down and distance, which team ha
 ### Blocked Sources
 
 If some providers are blocked or geo-restricted in your region, switch to
-[Hosted Feeds](#hosted-feeds) (Settings → Source mode). Your instance then
+[Hosted Feeds](#hosted-feeds) (**Settings → Sources → Feed source**). Your instance then
 pulls ready-made channels, guide, and events from Rebel IPTV instead of
 scraping the blocked providers itself, so regional blocks no longer matter.
 
@@ -407,7 +421,7 @@ scraping the blocked providers itself, so regional blocks no longer matter.
 By default your instance builds everything itself — it scrapes the sources,
 assembles the playlist and guide, and proxies the streams. If you'd rather
 your box not run the scrapers at all, switch it to hosted feeds from the
-dashboard: **Settings → Source mode → "Use Rebel IPTV playlist"**.
+dashboard: **Settings → Sources → Feed source → Use Rebel IPTV playlist**.
 
 Your instance then pulls its channels, live sports events, and guide from
 Rebel IPTV's hosted service and serves them through your usual playlist,
@@ -431,15 +445,16 @@ re-enabling once it finishes.
 
 On startup and once an hour, the server scrapes channel data, normalizes names, detects categories, and checks stream health. Offline channels are rechecked every 5 minutes.
 
-Channel numbers are **stable** — every channel has a fixed number baked into the build, so your Jellyfin/Plex bookmarks survive cache purges and upgrades. Numbers are allocated in ranges:
+Channel numbers are **stable** — every curated channel has a fixed number of its own rather than one handed out by your box, so your Jellyfin/Plex channel mappings survive cache purges and upgrades. Numbers are allocated in ranges:
 
-| Range  | Use                                           |
-|--------|-----------------------------------------------|
-| 1–4999 | Curated broadcast networks and cable channels |
-| 5000+  | Live sports events (assigned per refresh)     |
-| 10000+ | Custom M3U sources (one range per source)     |
+| Range     | Use                                           |
+|-----------|-----------------------------------------------|
+| 1–3999    | Curated broadcast networks and cable channels |
+| 4000–4199 | Your favourite team channels                  |
+| 5000+     | Live sports events (assigned per refresh)     |
+| 10000+    | Custom M3U sources (one range per source)     |
 
-From **Settings → Channel Lineup** you can disable channels you don't watch (they drop out of your playlist, guide, and counts) and drag the rest into your own order. These are per-instance preferences saved with your data and layered on top of the built-in numbers, so they persist across restarts and upgrades.
+From **Settings → Content → Channel Lineup** you can disable channels you don't watch (they drop out of your playlist, guide, and counts) and drag the rest into your own order. These are per-instance preferences saved with your data and layered on top of the built-in numbers, so they persist across restarts and upgrades.
 
 Local broadcast stations are identified by their FCC call sign. For example, "ABC (KABC) Los Angeles" becomes **KABC Los Angeles CA (ABC)** — call sign, market, and network — and gets a logo showing the network mark with the call sign and city. Because the city and network are in the name, you can find a local station by searching for its city (e.g. **Los Angeles**) or network (e.g. **ABC**) in your player.
 
@@ -449,27 +464,32 @@ Channels are grouped by category in the M3U playlist using `group-title`. Multip
 
 Add your own M3U playlists (URL or file upload) from the Settings page. Custom channels are merged into your playlist and EPG, numbered in the 10000+ range, and persist across restarts.
 
-Each source can be edited after adding — rename it, change the URL, or upload a replacement M3U file — without losing its channel-number slot. Turn on the optional **Validate** toggle and the server health-checks each stream and marks offline ones red. While a source is being fetched or validated in the background, the entry shows a "loading" pill and updates automatically when the check completes.
+Each source can be edited after adding — rename it, change the URL, or upload a replacement M3U file — without losing its channel-number slot. A source can't point back at this server: its own playlist, guide or streams are refused when you add them, since the server would otherwise fetch from itself in a loop. Turn on the optional **Validate** toggle and the server health-checks each stream and marks offline ones red. While a source is being fetched or validated in the background, the entry shows a "loading" pill and updates automatically when the check completes.
 
-**Guide listings.** A guide is picked up automatically when your playlist links one. Plenty of playlists don't — an uploaded file, or a provider that publishes its guide at a separate address — so each source also takes an **EPG URL** of your own, when you add it and when you edit it. Leave it empty and whatever your playlist links is used. Guide entries are matched to your channels by `tvg-id`, and by name when the id doesn't line up, so a hand-made M3U with no ids still gets its listings. The sources list shows how many guide entries each source holds, and when it holds none it says why — the playlist links no guide, the guide couldn't be downloaded, or the guide covers none of your channels.
+**Guide listings.** A guide is picked up automatically when your playlist links one. Plenty of playlists don't — an uploaded file, or a provider that publishes its guide at a separate address — so each source also takes an **EPG URL** of your own, when you add it and when you edit it. If the guide comes as a download rather than at an address, **Upload a guide file** instead — an XMLTV file, plain or gzipped. An uploaded file takes priority over a URL, and a URL over whatever your playlist links; leave both empty and the playlist's own guide is used. An uploaded guide covers only the dates it was published for, so upload a fresh one when it runs out. Guide entries are matched to your channels by `tvg-id`, and by name when the id doesn't line up, so a hand-made M3U with no ids still gets its listings. The sources list shows how many guide entries each source holds, and when it holds none it says why — the playlist links no guide, the guide couldn't be downloaded, or the guide covers none of your channels.
 
 ### Sports Events
 
-Sport events are scraped, then cross-referenced with ESPN's scoreboard API for accurate start times and canonical team names. Events are sorted by start time across all leagues.
+Every event on the schedule — a game, a fight card or a race — comes with its start time, names and live score, and your server finds the streams for it and matches each one to its event. Events are sorted by start time across all leagues.
 
 Each event gets EPG entries with pregame, game, and postgame blocks:
 
-| Sport | Pregame | Game      | Postgame |
-|------|---------|-----------|----------|
-| NFL  | 30 min  | 3.5-4 hrs | 30 min   |
-| NHL  | 30 min  | 3 hrs     | 30 min   |
-| NBA  | 30 min  | 2.5 hrs   | 30 min   |
-| MLB  | 30 min  | 3.5 hrs   | 30 min   |
-| MLS  | 30 min  | 2 hrs     | 30 min   |
+| Event        | Pregame | Game                          | Postgame |
+|--------------|---------|-------------------------------|----------|
+| NFL          | 30 min  | 4 hrs                         | 30 min   |
+| College football | 30 min | 4 hrs                     | 30 min   |
+| MLB          | 30 min  | 3.5 hrs                       | 30 min   |
+| NHL          | 30 min  | 3 hrs                         | 30 min   |
+| MLS, CFL     | 30 min  | 3 hrs                         | 30 min   |
+| NBA          | 30 min  | 2.5 hrs                       | 30 min   |
+| Fight card   | 30 min  | 6 hrs (from the first bout)   | 30 min   |
+| Race         | 30 min  | 2.5–4 hrs                     | 30 min   |
+
+An event that runs long — overtime, extra innings, a late main event — keeps its guide listing extending until it ends, so the guide never shows postgame over a game that is still on.
 
 An event joins your playlist and guide as soon as a feed is found for it — usually well before kick-off — with the start time in the guide telling you when it begins. Waiting until the feed was confirmed live meant the game only appeared about a minute after it had already started, so a player that reads your lineup once each morning never saw that night's games at all. A finished game is not dropped at the final whistle either: it stays listed for as long as its feed keeps running, so the channel rides through post-game coverage instead of cutting off mid-broadcast.
 
-Event channels are numbered from **5000** in start-time order.
+Event channels are numbered from **5000** in start-time order and grouped in your playlist under their league — games, fight cards and races alike, so a card or a race sits right beside the games and is tagged as sports in your guide.
 
 ### Favourite Team Channels
 
@@ -491,14 +511,15 @@ Everything that needs to survive a restart lives in the `/app/data` volume, encr
 
 - **`iptv.db.gcm`** — encrypted snapshot of all data: channels, sports events, EPG guide, custom-source definitions, your API key, and runtime metrics
 - **`custom-m3u/`** — your uploaded custom M3U source files
+- **`custom-epg/`** — guide files you uploaded for your custom sources
 
 The snapshot is AES-256-GCM encrypted, so the on-disk file is opaque — running `sqlite3 iptv.db.gcm` just reports "file is not a database". While the server is running it works against a plaintext copy held in memory that never touches persistent storage; on a clean shutdown that copy is re-encrypted back into the snapshot.
 
-Channel numbers and the curated channel directory are baked into the image — not in persistent data — so cache purges never reshuffle numbers.
+Curated channel numbers come with the channel directory rather than being assigned on your box, so a cache purge never reshuffles them.
 
 ## Reverse Proxy
 
-The server auto-detects the correct base URL from `X-Forwarded-Proto` and `X-Forwarded-Host` headers.
+The server builds the URLs in your playlist and guide from the `Host` header your proxy passes through, and switches them to `https` when the proxy sends `X-Forwarded-Proto: https` — so make sure your proxy forwards the original `Host`, as both examples below do.
 
 Set `TRUSTED_PROXIES` to your proxy's address so the server knows which `X-Forwarded-For` headers to believe when it records who is connecting — a comma-separated list of addresses or CIDR ranges:
 
@@ -517,7 +538,6 @@ location / {
     proxy_set_header Host $host;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header X-Forwarded-Host $host;
 }
 ```
 
@@ -529,6 +549,18 @@ labels:
     - "traefik.http.routers.iptv.rule=Host(`iptv.example.com`)"
     - "traefik.http.services.iptv.loadbalancer.server.port=8080"
 ```
+
+## Sponsors
+
+Rebel IPTV is **100% community funded**.
+
+Sponsoring is entirely optional. There is no paid tier, nothing is locked behind it, and nothing
+changes for you if you never do — the project stays exactly as it is either way. If you find it
+useful and would like to help cover the work that goes into it, you can do that through
+[GitHub Sponsors](https://github.com/sponsors/rebeliptv).
+
+Anyone who sponsors is listed on the **Sponsors** panel at the foot of your own dashboard, as a
+thank-you. Sponsors who choose to stay private on GitHub are never listed anywhere.
 
 ## Reporting Issues
 
