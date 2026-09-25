@@ -87,13 +87,14 @@ The web dashboard is available in **19 languages**.
 - **Channel categories** -- Sports, News, Local, Kids, Movies, Entertainment, Lifestyle, Documentary, and more
 - **Local station detection** -- identifies call signs (KABC, WCBS, etc.)
 - **Multi-source stream fallback** -- events and channels automatically try alternate providers if the primary feed fails, both at refresh time and mid-watch
-- **Local ABC / CBS / NBC / FOX** -- these four pinned networks carry your own market's local affiliate, for both the live feed and the guide. By default the market comes from your server's timezone (Eastern → New York, Central → Chicago, Mountain → Denver, Pacific → Los Angeles, Alaska → Anchorage, Hawaii → Honolulu); set your exact market in **Settings → Content → Local Market** (Boston, Seattle, Dallas, Miami and more than 30 others). If your local station has no working feed they borrow the biggest station in the same timezone, guide included, so the picture and the listings always agree — never across a timezone. CW / PBS / ION have no local option and stay on their national feed.
+- **Local ABC / CBS / NBC / FOX** -- these four pinned networks carry your own market's local affiliate, for both the live feed and the guide. By default the market comes from your server's timezone (Eastern → New York, Central → Chicago, Mountain → Denver, Pacific → Los Angeles, Alaska → Anchorage, Hawaii → Honolulu); set your exact market in **Settings → Content → Local Market** (Boston, Seattle, Dallas, Miami and more than 30 others). They only ever play your market's station: if it has no working feed, the channel says so and comes back with it, rather than switching you to another city's station. CW / PBS / ION have no local option and stay on their national feed.
 - **Stream health monitoring** -- automatically detects offline channels — and ones that answer but carry no audio or video — and recovers them from a working feed
 - **Live scores and stats** -- real-time scores, period-by-period linescore, venue, weather, and game situation data, arriving already collected so your server never has to reach the schedule sites itself
-- **Sport-specific event pages** -- baseball, football and soccer games get a layout built for that sport (team comparison bars, pitching matchup, the current drive, recent form, head-to-head, match timeline) instead of one generic card; a fight card lists every bout and a race its full field; other sports use the standard layout
+- **Sport-specific event pages** -- baseball, football, soccer and hockey games get a layout built for that sport (team comparison bars, pitching matchup, the current drive, recent form, head-to-head, match timeline) instead of one generic card; a fight card lists every bout and a race its full field; other sports use the standard layout
 - **Rich EPG data** -- XMLTV guide covering today and tomorrow, with show descriptions, episode info, season/episode numbers, TV ratings, and show/movie poster artwork
 - **Horizontal timeline guide** -- scrollable program grid with sticky channel column and current-time indicator; hover any programme for a card with its synopsis, so you can tell one slot from another without opening anything
 - **Theme switcher** -- light, dark, or auto (system preference detection)
+- **Multiview** -- watch up to four channels or games at once in a grid, any mix of the two, with sound from whichever picture you click. Each picture uses one of your simultaneous streams, so the page shows how many are left for your other devices and stops you going past the limit; leaving the page frees them again
 - **Built-in video player** -- program progress bar, now-playing, up-next preview, and event scoreboards
 - **Docker-network friendly URLs** -- one-click toggle in Settings switches copied playlist / EPG URLs between the dashboard's origin and the container's internal hostname, so Jellyfin / Plex containers on the same Docker network work without hand-editing
 - **Targeted refresh controls** -- refresh just channels, just events, just the guide, or everything
@@ -330,6 +331,8 @@ It applies to **every** way of connecting — the HDHomeRun tuner, an M3U playli
 Watching the same channel on several devices counts as **one**, because they share a single feed out
 to the source; it is a limit on distinct channels, not on people.
 
+It counts the built-in channels only. **Your own custom sources are not included** — those are fetched inside your own network rather than from the channel sources this limit exists to stay within, so run as many of them as your connection can carry.
+
 | | |
 |---|---|
 | Default | **4** |
@@ -359,6 +362,7 @@ On first launch a short setup wizard walks you through choosing a channel source
 - **Channels** -- searchable and filterable channel list (filter by category, country, and status) with category badges and online/offline status; search matches the channel name, network, and city. Browse it as a classic list or as **country tabs with channel cards** (switch with the layout buttons at the top of the page), with a separate **Custom** tab for your own sources. Click a channel for its detail page with video player and program guide.
 - **Guide** -- horizontal timeline program grid with sticky channel column, current-time indicator, and scrollable schedule. Hover a programme and a card opens with its synopsis; descriptions are fetched for a channel the first time you point at its row, so the guide loads no slower than before
 - **Sports** -- live and upcoming events grouped by date, on two tabs: **Team sports** for games, with team logos and live scores, and **Event sports** for fight cards and races, each card showing the headline bout or the size of the field. Upcoming events show "Stream Not Available Yet" until a feed is found. Click an event for its detail page with live scoreboard and video player. If the listings can't be refreshed, a banner says they may be out of date — and whether the schedule service is behind (it recovers on its own) or your server can't reach it — rather than leaving the page looking like a quiet day
+- **Multiview** -- up to four pictures on one screen, picked from your channels and the games that are on. Click a picture to move the sound to it; the one you're listening to is outlined. Each X clears its own box, and the header tells you how many of your simultaneous streams are in use. On a phone the boxes stack
 - **Settings** -- grouped into **Server**, **Sources**, **Content**, **Connect**, **Playback**, and **Access** sections: API key management, dashboard login & admin-account management, theme switcher, dashboard language, custom M3U source management (with each source's guide URL or uploaded guide file), channel lineup management (enable/disable and drag-to-reorder), local market selection for the pinned ABC / CBS / NBC / FOX channels, channel-country selection, sports options (carry sports, sports-only mode, leagues), favourite-team channels, feed source (local scraping vs Rebel IPTV hosted feeds), the HDHomeRun tuner and how many streams play at once, Docker container-hostname toggle for endpoint URLs, optional channel numbers in the playlist, adjustable stream buffering, server info, version update check with one-click in-app upgrade, restarting the server, and targeted manual refresh (channels / guide / events / all)
 - **Favourite Teams** (**Settings → Content → Favourite Teams**) -- your picks as a set of cards, each showing what its channel is doing right now; add a team by sport or by typing its name, and drag them into the order you want their channel numbers in
 
@@ -378,11 +382,24 @@ Click any sport event to see:
 - Game status, venue, weather, and in-game situation, in the same place for every sport
 - Embedded video player with automatic fallback to alternate stream sources
 
-Baseball, football and soccer games render a layout built for that sport — team comparison bars, pitching matchup, season leaders, recent form and the injury report for baseball; recent form, head-to-head, top scorers and a live match timeline for soccer. Other sports use the standard layout.
+Baseball, football, soccer and hockey games render a layout built for that sport — team comparison bars, pitching matchup, season leaders, recent form and the injury report for baseball; recent form, head-to-head, top scorers and a live match timeline for soccer; the two starting goalies with their save percentages, goaltending and skating statistics side by side, and leaders in goals, assists and points for hockey. Other sports use the standard layout.
 
 A football game in progress adds the drive: the down and distance, which team has the ball and where, whether they are in the red zone, and each side's remaining timeouts.
 
 A fight card or a race has no two teams, so its page is drawn from the event itself: a fight card lists every bout, main event first, with the winner marked once each is decided, and a race lists its full field.
+
+### Watching on a TV
+
+The dashboard's player has no Cast button, and that is a browser rule rather than a
+missing feature: a page may only offer casting over HTTPS, and your dashboard is served
+over plain `http://` at a local address. Two things work today without any of that:
+
+- **Cast or mirror the page yourself.** In Chrome, **⋮ → Cast** sends the tab to a
+  Chromecast or Google TV; on a Mac, AirPlay screen mirroring does the same. Your
+  computer does the work, so it needs to stay awake.
+- **Cast from your media server.** Jellyfin, Plex and Emby all cast properly from their
+  own apps, and they are already being fed by this server — so for watching on a TV that
+  is the better route anyway.
 
 ## Configuration
 
