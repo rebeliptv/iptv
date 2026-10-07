@@ -27,14 +27,14 @@ The web dashboard is available in **19 languages**.
 ## Screenshots
 
 <details>
-<summary><strong>Dashboard</strong> — system overview with live sports</summary>
+<summary><strong>Dashboard</strong> — what's playing, watch time, delivery health and live sports</summary>
 <br>
 
 ![Dashboard](screenshots/dashboard.png)
 </details>
 
 <details>
-<summary><strong>Channels</strong> — searchable channel list with categories</summary>
+<summary><strong>Channels</strong> — searchable channels, as cards or a list, by country and category</summary>
 <br>
 
 ![Channels](screenshots/channels.png)
@@ -55,7 +55,7 @@ The web dashboard is available in **19 languages**.
 </details>
 
 <details>
-<summary><strong>Sports</strong> — live events sorted by start time</summary>
+<summary><strong>Sports</strong> — live games with their scores as they happen</summary>
 <br>
 
 ![Sports](screenshots/sports.png)
@@ -69,7 +69,7 @@ The web dashboard is available in **19 languages**.
 </details>
 
 <details>
-<summary><strong>Settings</strong> — API key management and server info</summary>
+<summary><strong>Settings</strong> — channel countries, local market and sports</summary>
 <br>
 
 ![Settings](screenshots/settings.png)
@@ -86,21 +86,22 @@ The web dashboard is available in **19 languages**.
 - **Choose your countries** -- pick which countries' channels you carry from **Settings → Content → Channel Countries**; turn a country off and its channels leave the playlist, guide, dashboard, and search everywhere
 - **Channel categories** -- Sports, News, Local, Kids, Movies, Entertainment, Lifestyle, Documentary, and more
 - **Local station detection** -- identifies call signs (KABC, WCBS, etc.)
-- **Multi-source stream fallback** -- events and channels automatically try alternate providers if the primary feed fails, both at refresh time and mid-watch
+- **Multi-source stream fallback** -- events and channels start on the highest-priority source a check has confirmed working, and automatically try alternate providers if it fails, both at refresh time and mid-watch
 - **Local ABC / CBS / NBC / FOX** -- these four pinned networks carry your own market's local affiliate, for both the live feed and the guide. By default the market comes from your server's timezone (Eastern → New York, Central → Chicago, Mountain → Denver, Pacific → Los Angeles, Alaska → Anchorage, Hawaii → Honolulu); set your exact market in **Settings → Content → Local Market** (Boston, Seattle, Dallas, Miami and more than 30 others). They only ever play your market's station: if it has no working feed, the channel says so and comes back with it, rather than switching you to another city's station. CW / PBS / ION have no local option and stay on their national feed.
-- **Stream health monitoring** -- automatically detects offline channels — and ones that answer but carry no audio or video — and recovers them from a working feed
+- **Stream health monitoring** -- a channel shows online only while a check has confirmed one of its sources works; offline channels — and ones that answer but carry no audio or video — are detected automatically and recovered from a working feed
 - **Live scores and stats** -- real-time scores, period-by-period linescore, venue, weather, and game situation data, arriving already collected so your server never has to reach the schedule sites itself
 - **Sport-specific event pages** -- baseball, football, soccer and hockey games get a layout built for that sport (team comparison bars, pitching matchup, the current drive, recent form, head-to-head, match timeline) instead of one generic card; a fight card lists every bout and a race its full field; other sports use the standard layout
 - **Rich EPG data** -- XMLTV guide covering today and tomorrow, with show descriptions, episode info, season/episode numbers, TV ratings, and poster artwork for shows, movies and games
 - **Horizontal timeline guide** -- scrollable program grid with sticky channel column and current-time indicator; hover any programme for a card with its synopsis, so you can tell one slot from another without opening anything
 - **Theme switcher** -- light, dark, or auto (system preference detection)
 - **Multiview** -- watch up to four channels or games at once in a grid, any mix of the two, with sound from whichever picture you click. Pick what goes on each screen from a searchable browser of channels and the games that are on, and double-click a picture to make it large with the others beside it. Each picture uses one of your simultaneous streams, so the page shows how many are left for your other devices and stops you going past the limit; leaving the page frees them again
-- **Built-in video player** -- program progress bar, now-playing, up-next preview, and event scoreboards
+- **Built-in video player** -- its own controls, the same in every browser: what's on across the top, and along the bottom a timeline over the programme where you can skip back and forth through what the player has buffered (a paused channel keeps buffering for up to 10 minutes), a **LIVE** button that shows how far behind live you are, volume, closed captions, picture-in-picture and fullscreen, with keyboard shortcuts; the channel and game pages add the up-next preview and live scoreboards
+- **Closed captions** -- channels that carry captions can show them in the dashboard player: CC1, plus the digital caption services where a channel has them. They start off on every channel; turn them on from the **CC** button
 - **Docker-network friendly URLs** -- one-click toggle in Settings switches copied playlist / EPG URLs between the dashboard's origin and the container's internal hostname, so Jellyfin / Plex containers on the same Docker network work without hand-editing
 - **Targeted refresh controls** -- refresh just channels, just events, just the guide, or everything
-- **Automatic failover** -- a brief provider hiccup is smoothed from the on-server buffer, and a source that goes bad is swapped for a working one on the next reconnect, so the stream recovers instead of freezing on a dead feed
-- **Says what's happening on screen** -- a channel that takes a moment to start shows a *Connecting to your channel* card instead of a blank screen, and a channel that is switching sources, one past your stream limit, or a game that hasn't started yet says so too -- in every app, not just the dashboard
-- **Stream stats** -- an optional panel under the player shows how much of the stream is buffered, how fast its source is delivering and how many are watching (**Settings → Playback → Stream stats**)
+- **Automatic failover** -- a brief provider hiccup is smoothed from the on-server buffer, a source that goes bad is swapped for a working one without stopping the stream, and if every source drops out the channel shows a *Reconnecting* card and comes back by itself as soon as one plays again
+- **Says what's happening on screen** -- a channel that takes a moment to start shows a *Connecting to your channel* card instead of a blank screen, and a channel that is switching sources, one past your stream limit, or a game that hasn't started yet says so too, for as long as the wait lasts, then switches to the channel by itself -- in every app, not just the dashboard, so Jellyfin and Plex stay on the channel instead of dropping back to the guide
+- **Stream stats** -- an optional panel under the player shows how much of your stream is buffered, how fast its source is delivering and how many are watching (**Settings → Playback → Stream stats**)
 - **Adjustable stream buffering** -- the server always holds 15 seconds of each live feed in memory before it reaches your player, so a brief provider hiccup drains that cushion instead of freezing the picture; add more on top in **Settings → Playback** if your feeds need it
 - **Cache survives restarts** -- the playlist, guide, and in-flight stream tokens are restored on boot, so clients keep playing through a container restart
 - **One-click in-app updates** -- upgrade to the latest version straight from the dashboard with an **Update now** button, no command line needed (see [Updating](#updating))
@@ -331,7 +332,8 @@ Plex's own current M3U / XMLTV instructions — they are the authority on their 
 
 It applies to **every** way of connecting — the HDHomeRun tuner, an M3U playlist, and this dashboard.
 Watching the same channel on several devices counts as **one**, because they share a single feed out
-to the source; it is a limit on distinct channels, not on people.
+to the source; it is a limit on distinct channels, not on people. A channel counts once it starts
+playing: one that is still starting, or trying sources that don't work, doesn't use up a stream.
 
 It counts the built-in channels only. **Your own custom sources are not included** — those are fetched inside your own network rather than from the channel sources this limit exists to stay within, so run as many of them as your connection can carry.
 
@@ -341,7 +343,8 @@ It counts the built-in channels only. **Your own custom sources are not included
 | Range | 1 – 32 |
 
 Ask for a channel beyond the limit and it shows a **stream limit reached** card rather than failing,
-then starts on its own as soon as another channel stops — no need to go back and pick it again.
+then starts on its own, in the same stream, as soon as another channel stops — in every app, with no
+need to go back and pick it again.
 
 Set it to match what the line behind your channels can actually carry. Too high and the source
 refuses first, which reaches you as its error rather than ours, with nothing to explain it. Too low
@@ -372,7 +375,7 @@ On first launch a short setup wizard walks you through choosing a channel source
 
 Click any channel to see:
 - Channel logo, categories, and status
-- Embedded video player (click to watch), with a stream stats panel under it when that is turned on
+- Embedded video player (click to watch) with a timeline you can skip through, a **LIVE** button and closed captions, and a stream stats panel under it when that is turned on
 - Now playing info with up-next preview
 - Full program guide
 
@@ -481,11 +484,13 @@ Channels are grouped by category in the M3U playlist using `group-title`. Multip
 
 ### Custom M3U Sources
 
-Add your own M3U playlists (URL or file upload) from the Settings page. Custom channels are merged into your playlist and EPG, numbered in the 10000+ range, and persist across restarts.
+Add your own M3U playlists from the Settings page: by URL, as an uploaded file, or as a file you keep in your data folder (see below). Custom channels are merged into your playlist and EPG, numbered in the 10000+ range, and persist across restarts.
 
 Each source can be edited after adding — rename it, change the URL, or upload a replacement M3U file — without losing its channel-number slot. A source can't point back at this server: its own playlist, guide or streams are refused when you add them, since the server would otherwise fetch from itself in a loop. Turn on the optional **Validate** toggle and the server health-checks each stream and marks offline ones red. While a source is being fetched or validated in the background, the entry shows a "loading" pill and updates automatically when the check completes.
 
-**Guide listings.** A guide is picked up automatically when your playlist links one. Plenty of playlists don't — an uploaded file, or a provider that publishes its guide at a separate address — so each source also takes an **EPG URL** of your own, when you add it and when you edit it. If the guide comes as a download rather than at an address, **Upload a guide file** instead — an XMLTV file, plain or gzipped. An uploaded file takes priority over a URL, and a URL over whatever your playlist links; leave both empty and the playlist's own guide is used. An uploaded guide covers only the dates it was published for, so upload a fresh one when it runs out. Guide entries are matched to your channels by `tvg-id`, and by name when the id doesn't line up, so a hand-made M3U with no ids still gets its listings. The sources list shows how many guide entries each source holds, and when it holds none it says why — the playlist links no guide, the guide couldn't be downloaded, or the guide covers none of your channels.
+**Guide listings.** A guide is picked up automatically when your playlist links one. Plenty of playlists don't — an uploaded file, or a provider that publishes its guide at a separate address — so each source also takes an **EPG URL** of your own, when you add it and when you edit it. If the guide comes as a download rather than at an address, **Upload a file** instead — an XMLTV file, plain or gzipped. A source's guide is one choice: the playlist's own, a URL, an uploaded file, or a file from your data folder. An uploaded guide covers only the dates it was published for, so upload a fresh one when it runs out. Guide entries are matched to your channels by `tvg-id`, and by name when the id doesn't line up, so a hand-made M3U with no ids still gets its listings. The sources list shows how many guide entries each source holds, and when it holds none it says why — the playlist links no guide, the guide couldn't be downloaded, or the guide covers none of your channels.
+
+**Files in your data folder.** Put a playlist in the `custom-m3u` folder or an XMLTV guide in the `custom-epg` folder of your data volume (`/app/data/custom-m3u` and `/app/data/custom-epg` inside the container), then choose **From your data folder** when you add or edit a source and pick the file. The file is read again on every refresh, so a guide another program keeps writing stays up to date in your guide too. If `/app/data` is a Docker volume rather than a folder on your server, as in the Quick Start, nothing outside the container can write into it: mount a folder from your server at `/app/data/custom-epg` or `/app/data/custom-m3u` instead. The dashboard shows how each folder is mapped and the line to add. Removing a source never deletes your file.
 
 ### Sports Events
 
@@ -512,7 +517,7 @@ Event channels are numbered from **5000** in start-time order and grouped in you
 
 ### Favourite Team Channels
 
-Pick a team under **Settings → Content → Favourite Teams** and it gets a channel of its own. Whenever that team plays — home or away — the channel carries the game, so you can tune straight to your team instead of hunting through the night's fixtures for them. The rest of the time it shows a card saying their next game is coming up (or that none is scheduled), and the guide lists their upcoming games with their start times.
+Pick a team under **Settings → Content → Favourite Teams** and it gets a channel of its own. Whenever that team plays — home or away — the channel carries the game, so you can tune straight to your team instead of hunting through the night's fixtures for them. The rest of the time it shows a card saying their next game is coming up (or that none is scheduled), and switches to the game by itself when it starts; the guide lists their upcoming games with their start times.
 
 Team channels are numbered from **4000**, just below the individual events, and you choose the order by dragging them. That number is fixed and does not reshuffle, so it is safe to map in your player. A team channel carries the same feed as the event channel for that game, so watching one costs no extra load on your box.
 
@@ -529,8 +534,10 @@ If your feeds still freeze for a second or two when a provider hiccups, turn on 
 Everything that needs to survive a restart lives in the `/app/data` volume, encrypted at rest:
 
 - **`iptv.db.gcm`** — encrypted snapshot of all data: channels, sports events, EPG guide, custom-source definitions, your API key, and runtime metrics
-- **`custom-m3u/`** — your uploaded custom M3U source files
-- **`custom-epg/`** — guide files you uploaded for your custom sources
+- **`custom-m3u/`** — custom-source playlists: the files you upload, and any you put here yourself to pick in the dashboard
+- **`custom-epg/`** — custom-source guide files, uploaded or put here yourself; a file you put here is read again on every refresh
+
+To put files in those two folders from outside the container while `/app/data` is a Docker volume, mount a folder from your server at `/app/data/custom-m3u` or `/app/data/custom-epg` (see [Custom M3U Sources](#custom-m3u-sources)).
 
 The snapshot is AES-256-GCM encrypted, so the on-disk file is opaque — running `sqlite3 iptv.db.gcm` just reports "file is not a database". While the server is running it works against a plaintext copy held in memory that never touches persistent storage; on a clean shutdown that copy is re-encrypted back into the snapshot.
 
