@@ -2,6 +2,7 @@ name: Channel Request
 description: Request a new channel or report a broken stream
 title: "[Channel]: "
 labels: ["channel"]
+assignees: ["rebel-bot"]
 body:
   - type: markdown
     attributes:

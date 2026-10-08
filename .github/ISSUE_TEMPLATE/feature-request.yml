@@ -2,6 +2,7 @@ name: Feature Request
 description: Suggest a new feature or improvement
 title: "[Feature]: "
 labels: ["enhancement"]
+assignees: ["rebel-bot"]
 body:
   - type: markdown
     attributes:

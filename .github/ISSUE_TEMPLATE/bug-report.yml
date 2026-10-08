@@ -2,6 +2,7 @@ name: Bug Report
 description: Report a bug or unexpected behavior
 title: "[Bug]: "
 labels: ["bug"]
+assignees: ["rebel-bot"]
 body:
   - type: markdown
     attributes:
