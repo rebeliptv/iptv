@@ -1,24 +1,32 @@
-# Dependabot — automated dependency-update PRs.
-# Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates
+# Pinning by digest and commit SHA makes builds reproducible and auditable, but
+# it also freezes them. Dependabot is the other half of that trade: it raises a
+# pull request when any pinned reference moves, so the pins stay current.
 #
-# This config must live in the iptv repo (rebeliptv/iptv), not the parent
-# development superproject — Dependabot reads each repo's own workflows and
-# does not descend into git submodules. Every other repo in the set already
-# has one; this repo carrying no app code is exactly why it was missed, and
-# why its single action sat two majors behind and unpinned while the rest
-# stayed current.
+# One moment each week rather than a trickle: all ecosystems open together on a
+# Monday morning, so reviewing dependencies is one task on one day.
+#
+# This config lives in this repo (rebeliptv/iptv), not the development
+# superproject: Dependabot reads each repo's own workflows.
 version: 2
+
 updates:
-  # GitHub Actions pinned in .github/workflows/*.yml (actions/stale).
+  # Minor and patch bumps batched into one PR; majors get their own, because a
+  # major can change an interface and deserves to be read rather than skimmed.
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
       day: monday
-    open-pull-requests-limit: 5
+      time: "06:00"
+      timezone: America/New_York
+    open-pull-requests-limit: 10
+    groups:
+      actions-minor-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+    # Supply-chain buffer: don't adopt a release in its first week, so yanked or
+    # compromised releases have time to surface. Security updates are exempt.
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: ci
-    # One grouped PR for all action bumps instead of one per action.
-    groups:
-      github-actions:
-        patterns: ["*"]
