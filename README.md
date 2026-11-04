@@ -14,8 +14,8 @@
 Aggregates live TV channels and sports events into a single M3U playlist with full EPG guide data.<br>
 Streams are fully proxied so upstream sources are never exposed to clients.<br>
 Designed for **Jellyfin**, **Emby**, **Plex**, and other apps that take an M3U playlist and an XMLTV guide.<br>
-It can also answer as an **HDHomeRun tuner** — Jellyfin, Plex and Emby can all add it that way, and for
-Plex and Emby it is the path their Live TV is built around.<br>
+It can also answer as an **HDHomeRun tuner**, the only kind Plex's Live TV takes, and Jellyfin and Emby can add it that way too.<br>
+Connect your Jellyfin, Emby or Plex from the dashboard and it sets itself up there for you.<br>
 The web dashboard is available in **19 languages**.
 
 **🌐 New here? Follow the step-by-step [setup guide at rebeliptv.com](https://www.rebeliptv.com).**
@@ -84,9 +84,11 @@ The web dashboard is available in **19 languages**.
 - **Sports only** -- turn on **Sports only** under **Settings → Sports** and your server carries just the games: the dashboard counts games where it counted channels, and a refresh fetches the games alone, in seconds
 - **The dashboard speaks your language** -- 19 of them: Arabic, Simplified and Traditional Chinese, Dutch, English, Finnish, French, German, Hindi, Indonesian, Italian, Japanese, Korean, Malay, Norwegian, Portuguese, Spanish, Swedish, and Urdu. Your browser's language is picked up the first time you open the dashboard, and the globe in the top bar changes it any time. The choice is stored on the server rather than in the browser, so it follows you to your phone and your TV box -- and dates, times, durations and temperatures follow it too, with Arabic and Urdu laying the whole dashboard out right-to-left
 - **Custom M3U sources** -- add your own M3U URLs or upload files to merge into the playlist, each with its own guide if it needs one (a guide URL or an uploaded XMLTV file); edit the URL or replace the uploaded file later without losing channel numbers
-- **Your lineup, your numbers** -- your apps get your channels numbered 1, 2, 3 in your lineup's order, counting only the ones that are on, so a channel you turn off leaves no gap. **Settings → Channels → Manage lineup** runs country by country: drag a channel, or click its number and type a new one, and filter by the channels that are on, turned off, offline or renumbered. Your choices persist across restarts and upgrades
-- **Choose your countries** -- pick which countries' channels you carry from **Settings → Channels → Countries**, and drag them into the order you want; turn a country off and its channels leave the playlist, guide, dashboard, and search everywhere. Turn on **Group channels by country** under **Settings → Channels → Numbering** and your apps get your channels country by country, in that order, with your playlist grouping them under their country
+- **Build your own lineup** -- **Settings → Channels → Manage lineup** puts your lineup beside every channel on offer: drag channels across to add them where you drop them, drag one or type its number to move it, and drag it back to take it out, or tick several and move them together. **Arrange** sorts your lineup A to Z, by category or by country, and **Undo** takes back your last change. Your changes wait until you press **Save**, then reach your playlist, guide and media servers all at once. Your apps get your channels numbered 1, 2, 3 in your lineup's order, counting only the ones in it, so a channel you take out leaves no gap. Your choices persist across restarts and upgrades -- see [Channels](#channels)
+- **Groups of your own** -- set **Group channels** under **Settings → Channels → Numbering** to **My own groups** and make groups such as Locals, News or Sports in your lineup. Your playlist groups your channels under your group names, and a group you give a starting number keeps its numbers when a group above it changes
+- **Choose your countries** -- pick which countries' channels you carry from **Settings → Channels → Countries**, and drag them into the order you want; turn a country off and its channels leave the playlist, guide, dashboard, and search everywhere. Set **Group channels** under **Settings → Channels → Numbering** to **By country** and your apps get your channels country by country, in that order, with your playlist grouping them under their country
 - **Channel numbers that start where you want** -- a **Channel number offset** under **Settings → Channels → Numbering** adds the same amount to every channel number in your playlist, guide and HDHomeRun tuner, so these channels stay clear of another tuner's in Plex or Jellyfin. With an offset of 100, channel 1 becomes 101
+- **Sports at the top of your guide** -- turn on **Sports first** under **Settings → Channels → Numbering** and apps that sort by channel number, such as Plex, Jellyfin and Emby, list your team channels, league channels and games ahead of your other channels. The sports keep their numbers, and your other channels move up past them: channel 1 becomes 10001
 - **Channel categories** -- Sports, News, Local, Kids, Movies, Entertainment, Lifestyle, Documentary, and more
 - **Local station detection** -- identifies call signs (KABC, WCBS, etc.)
 - **Multi-source stream fallback** -- events and channels start on the highest-priority source a check has confirmed working, and automatically try alternate providers if it fails, both at refresh time and mid-watch
@@ -112,14 +114,19 @@ The web dashboard is available in **19 languages**.
 - **Cache survives restarts** -- the playlist, guide, and in-flight stream tokens are restored on boot, so clients keep playing through a container restart
 - **One-click in-app updates** -- upgrade to the latest version straight from the dashboard with an **Update now** button, no command line needed (see [Updating](#updating))
 - **Restart from the dashboard** -- a **Restart** button in **Settings → System** stops and starts the server without a terminal on the host, on any setup; it comes back on the same version with nothing deleted (see [Restarting the server](#restarting-the-server))
-- **Answers as an HDHomeRun tuner** -- Plex and Emby build their Live TV around HDHomeRun hardware, so
-  the server can present itself as one and be added directly, no Plex Pass and no M3U-tuner flow
+- **Connect Jellyfin, Emby or Plex** -- under **Settings → Players → Media servers**, give your server
+  a key from your Jellyfin, Emby or Plex and it sets itself up there: its tuner, its guide and the
+  options they need. A tuner you added by hand is taken over in place, so your favourites and
+  recordings stay, and the guide there refreshes as soon as a refresh here finishes, instead of up to
+  a day later -- see [Connecting your media server](#connecting-your-media-server)
+- **Answers as an HDHomeRun tuner** -- Plex's Live TV takes only HDHomeRun tuners, so the server can
+  present itself as one and be added directly; Jellyfin and Emby can add it that way too
   (**Settings → Players**; see [Plex & Emby](#plex--emby))
 - Continuous MPEG-TS stream proxy (works like a real TV tuner for Jellyfin/ffmpeg)
 - Sport events sorted by start time with team logos and pregame/postgame EPG entries
 - API key protection for playlist and EPG endpoints
 - **Optional dashboard login** -- protect the dashboard with a username/password and add more admin accounts under **Settings → Security**; leave it unset to keep the dashboard open on a trusted network
-- **Guided first-run setup** -- five short steps: where your channels come from, then your local stations, countries and live sports on one page (or the recommended settings), an optional dashboard sign-in and playlist key, and your app -- Jellyfin, Plex, Emby, Channels DVR or another -- with numbered steps and a Copy button beside every address
+- **Guided first-run setup** -- five short steps: where your channels come from, then your local stations, countries and live sports on one page (or the recommended settings), an optional dashboard sign-in and playlist key, and your media server: the Jellyfin, Emby and Plex it finds on this computer and your network are set up for you from their key, and any other app, such as Channels DVR, gets numbered steps and a Copy button beside every address
 - Automatic hourly refresh in your time zone, with offline channel recovery every 5 minutes
 - Graceful shutdown with SIGTERM handling
 - **A small image** -- it carries only the server, with no operating system inside to keep patched; a container console, such as the Console button in Unraid or Portainer, has no shell to open
@@ -138,6 +145,7 @@ The following leagues currently have working live event feeds:
 | **MLS**   | Soccer (US)                 |
 | **CFL**   | Canadian Football           |
 | **NCAAF** | College Football            |
+| **NCAAB** | College Basketball          |
 
 Schedules, team names and live scores arrive already collected, so your server never has to reach the schedule sites itself; your server's own job is finding the streams and matching each one to its game. If the listings can't be refreshed, the Sports page says they may be out of date rather than looking like a quiet day.
 
@@ -250,6 +258,35 @@ Without a key, playlist and EPG are accessible to anyone on your network.
 
 ## Usage with IPTV Clients
 
+### Connecting your media server
+
+The quickest way to set up Jellyfin, Emby or Plex is to let your server do it. Under
+**Settings → Players → Media servers**, choose **Connect Jellyfin, Emby or Plex**, then give it your
+media server's address and a key made there:
+
+- **Jellyfin**: an API key, from **Dashboard → API Keys**
+- **Emby**: an API key, from **Settings → Advanced → API Keys**
+- **Plex**: your X-Plex-Token (Plex's help article "Finding an authentication token" shows where)
+
+Your server then adds its tuner and guide there and sets the options they need. A tuner and guide you
+already added by hand are taken over in place, so your favourites and recordings stay, and your other
+tuners, guides and libraries are left alone. Name the link as you want its tuner and guide to show
+there; it's **Rebel IPTV** unless you change it. From then on your server keeps them that way, and the
+guide there refreshes as soon as a refresh here finishes and each time you save your lineup, instead
+of up to a day later.
+
+- **Jellyfin** gets an M3U tuner on your playlist, with **Auto-loop live streams** off and the other
+  tuner settings below set as recommended.
+- **Emby** gets an M3U tuner on your playlist too. Emby's Live TV needs **Emby Premiere**: without
+  it, your server is still set up there, ready for when it's unlocked.
+- **Plex** gets this server's HDHomeRun tuner (your server turns on **Act as an HDHomeRun tuner** for
+  it) and a DVR reading its guide, and your channels are paired with the guide once Plex has read it,
+  in about two minutes. Plex's Live TV needs **Plex Pass**.
+
+The setup wizard's **Media server** step does the same, listing the Jellyfin, Emby and Plex it can
+reach on this computer and your network. The steps below set a media server up by hand, and work for
+any other app.
+
 ### Jellyfin
 
 1. Go to **Dashboard > Live TV > Tuner Devices > Add**
@@ -274,10 +311,11 @@ whichever of the tuner settings above Jellyfin offers for that tuner type.
 
 ### Plex & Emby
 
-Plex and Emby both build their Live TV around **HDHomeRun** network tuners, so this server can
-answer as one. That is the supported path for both — no Plex Pass, and no M3U-tuner flow that moves
-between releases. (Jellyfin can use the same tuner; see [Jellyfin](#jellyfin) for why the M3U route
-is suggested there instead.) The rest of this section applies to any HDHomeRun client.
+Plex's Live TV takes only **HDHomeRun** network tuners, so this server can answer as one, and Emby
+can add it the same way. Live TV needs **Plex Pass** in Plex and **Emby Premiere** in Emby. (Jellyfin
+can use the same tuner; see [Jellyfin](#jellyfin) for why the M3U route is suggested there instead.)
+The rest of this section applies to any HDHomeRun client; to have your server set Plex or Emby up
+for you instead, see [Connecting your media server](#connecting-your-media-server).
 
 Turn on **Act as an HDHomeRun tuner** in **Settings → Players** (it is on by default), then add the
 server by address.
@@ -308,20 +346,6 @@ as an XMLTV guide source.
 Both clients ask the tuner how many streams it can serve. That number is **Settings → Streaming →
 Simultaneous streams**, and it is a real limit on every way of connecting — see
 [Simultaneous Streams](#simultaneous-streams).
-
-<details>
-<summary>Plex via M3U instead (not recommended)</summary>
-
-Plex does have an M3U path, but it **requires an active Plex Pass**, is not officially supported, and
-the steps have changed between Plex releases. Prefer the tuner above. If you still want it, follow
-Plex's own current M3U / XMLTV instructions — they are the authority on their own flow — and give it:
-
-| Plex asks for | Give it |
-|---|---|
-| Tuner / M3U | `http://<server-ip>:8080/playlist?key=YOUR_KEY` |
-| XMLTV guide  | `http://<server-ip>:8080/epg?key=YOUR_KEY` |
-
-</details>
 
 ### General IPTV Clients
 
@@ -366,7 +390,7 @@ and you meet the card sooner than you need to.
 
 Access the dashboard at `http://<server-ip>:8080`.
 
-On first launch a setup wizard gets you watching in five short steps: choose where your channels come from; pick your local stations, countries and live sports on one page, or take the recommended settings and skip the choices; add a dashboard sign-in and a playlist key, now or later; then pick your app (Jellyfin, Plex, Emby, Channels DVR or another) and follow its numbered steps, with a **Copy** button beside every address you paste in. If you added a key, the addresses already include it. You can change anything later in Settings.
+On first launch a setup wizard gets you watching in five short steps: choose where your channels come from; pick your local stations, countries and live sports on one page, or take the recommended settings and skip the choices; add a dashboard sign-in and a playlist key, now or later; then connect your media server. The wizard lists the Jellyfin, Emby and Plex it finds on this computer and your network, and sets the one you pick up for you from its key; one it doesn't find, you connect by its address (see [Connecting your media server](#connecting-your-media-server)). Any other app, such as Channels DVR, gets numbered steps, with a **Copy** button beside every address you paste in. If you added a key, the addresses already include it. You can change anything later in Settings.
 
 ### Pages
 
@@ -375,7 +399,7 @@ On first launch a setup wizard gets you watching in five short steps: choose whe
 - **Guide** -- a timeline grid with a sticky channel column and a current-time line, opening on what's on now and next, with buttons for today, tomorrow and the days after and chips to show one category; when your lineup has more than one country, buttons show one country's channels. Click a show that's coming up to see its description, its times and what follows it on that channel; click a show that's on now, or a channel's name, to open the channel. Each show's episode title is shown, and on a phone a show's details slide up from the bottom
 - **Sports** -- the games that are on first, then today's, tomorrow's and the days after, with fight cards and races among them in start order. Each card shows both teams with their records, the score and the clock while a game is on, and a **Watch** button once it can be played. Filter by status or league, or pick **My teams** for your favourite teams' games. Click a game for its page with the scoreboard and video player. If the listings can't be refreshed, a banner says they may be out of date — and whether the schedule service is behind (it recovers on its own) or your server can't reach it — rather than leaving the page looking like a quiet day
 - **Multiview** -- up to four pictures on one screen. Choosing what goes on a screen opens a browser of your channels and the games that are on: search by name, number, show or team, filter by category and country, and see what each channel is airing and how long is left; feeds already on another screen are marked, and a screen's channel can be changed without clearing it first. Click a picture to move the sound to it (mute it from its speaker button); the one you're listening to is outlined. Double-click a picture to make it large, with the others beside it (under it on a phone); click a small one to swap it in, and double-click the large one, or press Esc, to go back to the grid. Each X clears its own box, and the header tells you how many of your simultaneous streams are in use. The **Recent** tab keeps what you've put on a screen in the past week, and **Add to Multiview** on a channel's page opens the channel here. On a phone the boxes stack
-- **Settings** -- eight sections, each answering one question: **Overview** (how your server is doing, anything that needs you, a manual refresh of channels, the guide, events or all of them with each step as it runs, and your instance ID), **Channels** (your countries and their order, the lineup page, numbering — channel numbers in the playlist, grouping by country and the channel number offset — and your home market), **Sports** (carrying sports, sports-only mode, league channels and the order of your leagues, score timing and favourite-team channels), **Sources** (the feed source, local scraping or Rebel IPTV's hosted feeds, and your custom M3U sources, each with its guide URL or guide file), **Players** (your playlist and guide addresses, the Docker container-hostname toggle, setup steps for your app, and the HDHomeRun tuner), **Streaming** (extra buffering, the stream stats panel and how many streams play at once), **Security** (the API key, and the dashboard login with its admin accounts) and **System** (the version and one-click in-app upgrade, the dashboard language, restarting the server, purging and rescraping, and resetting stream statistics). A search box finds any setting, every change says when it's saved, and bigger changes ask first
+- **Settings** -- eight sections, each answering one question: **Overview** (how your server is doing, anything that needs you, a manual refresh of channels, the guide, events or all of them with each step as it runs, and your instance ID), **Channels** (your countries and their order, your lineup, numbering — channel numbers in the playlist, how your channels are grouped, sports first and the channel number offset — and your home market), **Sports** (carrying sports, sports-only mode, league channels and the order of your leagues, score timing and favourite-team channels), **Sources** (the feed source, local scraping or Rebel IPTV's hosted feeds, and your custom M3U sources, each with its guide URL or guide file), **Players** (your playlist and guide addresses, the Docker container-hostname toggle, your media servers, setup steps for your app, and the HDHomeRun tuner), **Streaming** (extra buffering, the stream stats panel and how many streams play at once), **Security** (the API key, and the dashboard login with its admin accounts) and **System** (the version and one-click in-app upgrade, the dashboard language, restarting the server, purging and rescraping, and resetting stream statistics). A search box finds any setting, every change says when it's saved, and bigger changes ask first
 - **Favourite Teams** (**Settings → Sports → Favourite teams**) -- your picks as a set of cards, each showing what its channel is doing right now; add a team by sport or by typing its name, and drag them into the order you want their channel numbers in
 
 On a phone, the dashboard's pages sit in a tab bar along the bottom of the screen, with **More** for the rest.
@@ -480,7 +504,7 @@ re-enabling once it finishes.
 
 On startup and once an hour, the server scrapes channel data, normalizes names, detects categories, and checks stream health. Offline channels are rechecked every 5 minutes.
 
-Your channels are numbered **1, 2, 3** in your lineup's order, counting only the ones that are on: a channel you turn off has no number and the channels after it move up, while one that's only offline keeps its number. Your home market's networks always come first, from 1. Numbers are allocated in ranges:
+Your channels are numbered **1, 2, 3** in your lineup's order, counting only the ones in it: a channel you take out has no number and the channels after it move up, while one that's only offline keeps its number. Your home market's networks always come first, from 1. Numbers are allocated in ranges:
 
 | Range     | Use                                           |
 |-----------|-----------------------------------------------|
@@ -491,13 +515,17 @@ Your channels are numbered **1, 2, 3** in your lineup's order, counting only the
 
 To move every number up, set a **Channel number offset** under **Settings → Channels → Numbering**: it adds the same amount to each number in your playlist, guide and HDHomeRun tuner, so an offset of 100 puts channel 1 at 101 and keeps these channels clear of another tuner's in Plex or Jellyfin. Changing it renumbers every channel, so rescan the tuner in your player afterwards.
 
-**Settings → Channels → Manage lineup** runs country by country, in your country order, each country headed by the numbers its channels run through. Turn off the channels you don't watch (they drop out of your playlist, guide, and counts), drag a channel within its country, or click its number and type a new one; moving a channel renumbers only the channels it passes. Your home market's networks are pinned at the top, and each goes on and off with the local station it plays. These choices are saved with your data, so they persist across restarts, upgrades and a purge. Rescan the tuner in your app after changing them, so it picks up the new numbers.
+Turn on **Sports first** under **Settings → Channels → Numbering** and apps that sort by channel number, such as Plex, Jellyfin and Emby, list your team channels, league channels and games ahead of your other channels, at the top of the guide instead of the bottom. The sports keep the numbers in the table above, and everything else moves up past them by 10000: your channels start from 10001 and your custom sources from 20000. Rescan the tuner in your app after you change it.
 
-Turn on **Group channels by country** under **Settings → Channels → Numbering** and your apps get your channels country by country, in the order of your countries under **Countries**: your home market's networks first, from 1, then each country's channels, numbered straight through.
+**Settings → Channels → Manage lineup** shows **My lineup** beside **All channels**, every channel on offer (on a phone, as two tabs). Drag channels across to add them where you drop them, or **Add all** that the filters show; within your lineup, drag a channel or type its number to move it, and drag it back or press **×** to take it out (it drops out of your playlist, guide and counts). Tick several to move or take them out together. **Arrange** sorts your lineup A to Z, by category or by country, and **Undo** takes back your last change. Your changes wait until you press **Save**, then reach your playlist, guide and media servers all at once; **Discard** puts back what you last saved, and leaving with changes unsaved asks first. Under **Actions**, **Reset order** puts your channels back in the default order, and **Reset to default** puts every channel back in, in the default order for your settings. Your home market's networks are pinned at the top, and each goes on and off with the local station it plays. These choices are saved with your data, so they persist across restarts, upgrades and a purge. Rescan the tuner in your app after changing them, so it picks up the new numbers.
+
+Once you've changed your lineup, a channel newly on offer waits in **All channels**, marked **New**, until you add it, and your dashboard tells you when some arrive. A lineup you haven't changed still gets new channels straight away.
+
+**Group channels** under **Settings → Channels → Numbering** is **None**, **By country** or **My own groups**. **By country** gives your apps your channels country by country, in the order of your countries under **Countries**: your home market's networks first, from 1, then each country's channels, numbered straight through. Once you arrange your lineup yourself, your order is kept and your playlist still groups channels by country; **Reset order** goes back to grouping. With **My own groups**, you make groups such as Locals, News or Sports in **Manage lineup**: add, rename, collapse and move them, drag channels between them, or tick some and pick **Move to group**. Give a group a starting number and its channels keep their numbers when a group above it changes. Switching to it starts from your lineup as it is, so nothing moves, and **Actions → A group per country** makes a group for each of your countries.
 
 Local broadcast stations are identified by their FCC call sign. For example, "ABC (KABC) Los Angeles" becomes **KABC Los Angeles CA (ABC)** — call sign, market, and network — and gets a logo showing the network mark with the call sign and city. Because the city and network are in the name, you can find a local station by searching for its city (e.g. **Los Angeles**) or network (e.g. **ABC**) in your player.
 
-Channels are grouped by category in the M3U playlist using `group-title`. Multiple categories are supported (e.g., a local station gets both "Local" and "News"). With **Group channels by country** on, they're grouped by their country instead.
+Channels are grouped by category in the M3U playlist using `group-title`. Multiple categories are supported (e.g., a local station gets both "Local" and "News"). With **Group channels** set to **By country**, they're grouped by their country instead, and with **My own groups**, under your group names.
 
 ### Custom M3U Sources
 
@@ -522,7 +550,7 @@ Each event gets EPG entries with pregame, game, and postgame blocks:
 | MLB          | 30 min  | 3.5 hrs                       | 30 min   |
 | NHL          | 30 min  | 3 hrs                         | 30 min   |
 | MLS, CFL     | 30 min  | 3 hrs                         | 30 min   |
-| NBA          | 30 min  | 2.5 hrs                       | 30 min   |
+| NBA, college basketball | 30 min | 2.5 hrs              | 30 min   |
 | Fight card   | 30 min  | 6 hrs (from the first bout)   | 30 min   |
 | Race         | 30 min  | 2.5–4 hrs                     | 30 min   |
 
